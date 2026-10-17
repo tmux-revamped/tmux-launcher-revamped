@@ -55,3 +55,4 @@ owned	test/family/sync.bats
 owned	test/family/sweep.bats
 owned	test/family/doctor.bats
 owned	test/family/gen-readme.bats
+owned	test/family/propagate.bats
