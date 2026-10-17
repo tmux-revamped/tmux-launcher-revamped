@@ -55,7 +55,7 @@ set -g @launcher_k9s_key 'C-s'
 | `@launcher_<id>_height` | `80%` | popup height |
 | `@launcher_<id>_marker` | none | walk up to the dir holding this marker (e.g. `.git`); falls back to the pane path |
 | `@launcher_<id>_if` | none | predicate run before launch; non-zero makes the key inert (`LAUNCHER_PATH` is exported) |
-| `@launcher_<id>_prompt` | none | prompt text; the typed value is appended to the command |
+| `@launcher_<id>_prompt` | none | prompt text; each typed word is appended to the command as a literal argument |
 | `@launcher_<id>_group` | none | space separated app ids opened together as a tiled dashboard |
 | `@launcher_<id>_host` | none | remote host; the command is wrapped in `ssh -t` |
 | `@launcher_<id>_reuse` | off | in window mode, select an existing window instead of duplicating |

@@ -13,6 +13,7 @@
 
 PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 _SELF="${PLUGIN_DIR}/src/launcher.sh"
+_PROMPT_OPTION="@launcher_prompt_value"
 
 # shellcheck source=/dev/null
 source "${PLUGIN_DIR}/src/lib/launcher/launcher.sh"
@@ -53,6 +54,18 @@ _self_command() {
   out="bash $(printf '%q' "${_SELF}")"
   for word in "$@"; do
     out="${out} $(printf '%q' "${word}")"
+  done
+  printf '%s' "${out}"
+}
+
+_quote_words() {
+  local out="" input word
+  local -a words
+  for input in "$@"; do
+    read -r -a words <<< "${input}"
+    for word in "${words[@]}"; do
+      out="${out:+${out} }$(printf '%q' "${word}")"
+    done
   done
   printf '%s' "${out}"
 }
@@ -105,8 +118,10 @@ _launch_group() {
 # dispatch ID [ARG] -> resolve one app's config and launch it. This is the
 # single launch path; both the key bindings and the picker route through it.
 dispatch() {
-  local id="${1:-}" arg="${2:-}"
+  local id="${1:-}" arg
   [[ -z "${id}" ]] && return 0
+  shift
+  arg="$(_quote_words "$@")"
 
   local cmd pred path marker maxdepth scope group
   local env_vars pre exit_hook remote mode ver eff name width height reuse full
@@ -183,7 +198,8 @@ _bind_app() {
 
   prompt="$(get_opt "@launcher_${id}_prompt" "")"
   if [[ -n "${prompt}" ]]; then
-    _tmux bind-key "${key}" command-prompt -p "${prompt}" "run-shell -b $(_tmux_quote "$(_self_command dispatch "${id}") %%")"
+    _tmux bind-key "${key}" command-prompt -p "${prompt}" \
+      "set-option -gq ${_PROMPT_OPTION} \"%%%\" ; run-shell -b $(_tmux_quote "$(_self_command dispatch "${id}") #{q:${_PROMPT_OPTION}}")"
   else
     _tmux bind-key "${key}" run-shell -b "$(_self_command dispatch "${id}")"
   fi

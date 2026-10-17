@@ -174,7 +174,35 @@ teardown() {
   tmux set-option -gq "@launcher_man_prompt" "topic:"
   run _bind_app man
   [[ "${output}" == *"bind-key C-m command-prompt -p topic:"* ]]
-  [[ "${output}" == *"dispatch man %%"* ]]
+  [[ "${output}" == *"dispatch man #{q:@launcher_prompt_value}"* ]]
+}
+
+@test "_bind_app - a prompt passes the typed text through tmux quoting" {
+  # Arrange
+  tmux set-option -gq "@launcher_man_key" "C-m"
+  tmux set-option -gq "@launcher_man_prompt" "topic:"
+  _SELF="/opt/plug/src/launcher.sh"
+  _tmux() { printf '%s' "${@: -1}"; }
+
+  # Act
+  run _bind_app man
+
+  # Assert
+  [[ "${output}" == "set-option -gq @launcher_prompt_value \"%%%\" ; run-shell -b 'bash /opt/plug/src/launcher.sh dispatch man #{q:@launcher_prompt_value}'" ]]
+}
+
+@test "dispatch - every typed word is appended as a literal argument" {
+  # Arrange
+  tmux set-option -gq "@launcher_man_command" "man"
+  _launch() { printf '%s' "${4}"; }
+  local words
+
+  # Act
+  run dispatch man 'tmux $(id); exit' split
+
+  # Assert
+  words="$(sh -c "printf '%s\n' ${output}")"
+  [[ "${words}" == "man"$'\n'"tmux"$'\n'"\$(id);"$'\n'"exit"$'\n'"split" ]]
 }
 
 @test "_bind_app - skip-missing drops an app whose command is absent" {
