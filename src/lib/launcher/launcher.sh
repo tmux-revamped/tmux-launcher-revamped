@@ -97,13 +97,6 @@ scoped_path() {
 
 # Built-in defaults for the two apps shipped out of the box. yazi defaults to a
 # window because tmux popups lack passthrough, so image previews break (tmux#4329).
-default_key() {
-  case "${1}" in
-    lazygit) echo "C-g" ;;
-    yazi)    echo "C-y" ;;
-    *)       echo "" ;;
-  esac
-}
 default_command() {
   case "${1}" in
     lazygit) echo "lazygit" ;;
@@ -131,7 +124,6 @@ export -f compose_command
 export -f _path_has_marker
 export -f walk_up_marker
 export -f scoped_path
-export -f default_key
 export -f default_command
 export -f default_mode
 export -f _tmux_version_string

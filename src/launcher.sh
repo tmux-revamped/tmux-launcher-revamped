@@ -188,12 +188,12 @@ dispatch_picked() {
   dispatch "${choice}"
 }
 
-# _bind_app ID -> wire one app's key to dispatch. An app with no key, or a
+# _bind_app ID -> wire one app's key to dispatch. An app with no key set, or a
 # missing local command when skip-missing is on, binds nothing. A prompt option
 # routes through command-prompt so the typed value is appended to the command.
 _bind_app() {
   local id="${1}" key cmd prompt host skip first
-  key="$(get_opt "@launcher_${id}_key" "$(default_key "${id}")")"
+  key="$(get_opt "@launcher_${id}_key" "")"
   cmd="$(get_opt "@launcher_${id}_command" "$(default_command "${id}")")"
   [[ -z "${key}" || -z "${cmd}" ]] && return 0
 
@@ -214,11 +214,11 @@ _bind_app() {
 }
 
 # _bind_menu -> bind a global menu (display-menu, available below 3.2) listing
-# every app. Nothing is bound unless @launcher_menu_key is set.
+# every app on @launcher_menu_key, M-a unless set, and "off" binds nothing.
 _bind_menu() {
   local key apps id name args
-  key="$(get_opt @launcher_menu_key "")"
-  [[ -z "${key}" ]] && return 0
+  key="$(get_opt @launcher_menu_key "M-a")"
+  [[ "${key}" == "off" ]] && return 0
   apps="$(get_opt @launcher_apps "lazygit yazi")"
   args=(display-menu -T "Launchers")
   # shellcheck disable=SC2086

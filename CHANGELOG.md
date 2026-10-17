@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-10-17
+
+### Changed
+
+- **Breaking:** the app menu is now bound to `prefix + M-a` by default, the
+  key the family allocates to this plugin; it was unbound before, and
+  `@launcher_menu_key` set to `off` unbinds it. The built-in app keys are
+  gone: lazygit `C-g` and yazi `C-y` are unbound by default. Set
+  `@launcher_lazygit_key 'C-g'` and `@launcher_yazi_key 'C-y'` to restore
+  them.
+
 ### Fixed
 
 - Key, menu, and picker bindings quote the plugin path, so an install

@@ -177,10 +177,25 @@ teardown() {
   [[ "${output}" == *"new-window -n lazygit -c /work/project lazygit"* ]]
 }
 
-@test "_bind_app - default lazygit binds the key to dispatch via run-shell" {
+@test "_bind_app - a set key binds the app to dispatch via run-shell" {
+  tmux set-option -gq "@launcher_lazygit_key" "C-g"
   run _bind_app lazygit
   [[ "${output}" == *"bind-key C-g run-shell -b bash"* ]]
   [[ "${output}" == *"dispatch lazygit"* ]]
+}
+
+@test "_bind_app - a built-in app stays unbound until its key is set" {
+  # Arrange
+  tmux set-option -gqu "@launcher_lazygit_key"
+  tmux set-option -gqu "@launcher_yazi_key"
+
+  # Act
+  run apply_launcher
+
+  # Assert
+  [[ "${output}" != *"bind-key C-g"* ]] || false
+  [[ "${output}" != *"bind-key C-y"* ]] || false
+  [[ "${output}" != *"run-shell -b bash"* ]]
 }
 
 @test "_bind_app - an app without a key is skipped" {
@@ -258,8 +273,25 @@ teardown() {
   [[ "${output}" == *"dispatch yazi"* ]]
 }
 
-@test "_bind_menu - no menu key binds nothing" {
+@test "_bind_menu - the menu is bound to M-a by default" {
+  # Arrange
+  tmux set-option -gqu "@launcher_menu_key"
+
+  # Act
   run _bind_menu
+
+  # Assert
+  [[ "${output}" == *"bind-key M-a display-menu -T Launchers"* ]]
+}
+
+@test "_bind_menu - a menu key of off binds nothing" {
+  # Arrange
+  tmux set-option -gq "@launcher_menu_key" "off"
+
+  # Act
+  run _bind_menu
+
+  # Assert
   [[ -z "${output}" ]]
 }
 
@@ -275,12 +307,12 @@ teardown() {
   [[ -z "${output}" ]]
 }
 
-@test "apply_launcher - default apps each bind to dispatch" {
+@test "apply_launcher - the defaults bind only the menu over every app" {
   run apply_launcher
-  [[ "${output}" == *"bind-key C-g run-shell -b bash"* ]]
+  [[ "${output}" == *"bind-key M-a display-menu -T Launchers"* ]]
   [[ "${output}" == *"dispatch lazygit"* ]]
   [[ "${output}" == *"dispatch yazi"* ]]
-  [[ "${output}" != *"display-menu"* ]]
+  [[ "${output}" != *"display-popup -E bash"* ]]
 }
 
 @test "apply_launcher - menu and picker keys add their bindings" {
@@ -350,7 +382,7 @@ teardown() {
 
 @test "entrypoint - running the script with no args applies the bindings" {
   run bash "${SRC}"
-  [[ "${output}" == *"run-shell -b bash"* ]]
+  [[ "${output}" == *"bind-key M-a display-menu"* ]]
   [[ "${output}" == *"dispatch lazygit"* ]]
 }
 
@@ -367,6 +399,7 @@ teardown() {
 
 @test "_bind_app - a plugin path with a space and a quote reaches sh as one word" {
   # Arrange
+  tmux set-option -gq "@launcher_lazygit_key" "C-g"
   _SELF="${TEST_TMPDIR}/my plug's/src/launcher.sh"
   _tmux() { printf '%s' "${@: -1}"; }
   local words

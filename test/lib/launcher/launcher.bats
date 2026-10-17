@@ -144,9 +144,6 @@ teardown() {
 }
 
 @test "launcher.sh - built-in defaults for lazygit and yazi" {
-  [[ "$(default_key lazygit)" == "C-g" ]]
-  [[ "$(default_key yazi)" == "C-y" ]]
-  [[ -z "$(default_key htop)" ]]
   [[ "$(default_command lazygit)" == "lazygit" ]]
   [[ "$(default_command htop)" == "htop" ]]
   [[ "$(default_mode yazi)" == "window" ]]

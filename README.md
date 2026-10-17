@@ -4,7 +4,7 @@
 
 **Launch any TUI app in a popup or a window, scoped to the current pane's directory, with one configurable binding per app.**
 
-[![Tests](https://github.com/tmux-revamped/tmux-launcher-revamped/actions/workflows/tests.yml/badge.svg)](https://github.com/tmux-revamped/tmux-launcher-revamped/actions/workflows/tests.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](CHANGELOG.md)
+[![Tests](https://github.com/tmux-revamped/tmux-launcher-revamped/actions/workflows/tests.yml/badge.svg)](https://github.com/tmux-revamped/tmux-launcher-revamped/actions/workflows/tests.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](CHANGELOG.md)
 
 </div>
 
@@ -27,13 +27,17 @@ Built from [tmux-plugin-template](https://github.com/tmux-revamped/tmux-plugin-t
 
 ## How it works
 
-List your apps in `@launcher_apps`. For each app `<id>`, set its options. `lazygit` (popup, `C-g`) and `yazi` (window, `C-y`) ship as working defaults.
+List your apps in `@launcher_apps`. For each app `<id>`, set its options. `prefix + M-a` opens a menu of every listed app, the one key the family allocates to this plugin. `lazygit` (popup) and `yazi` (window) ship with a working command and mode, and like every app they get a direct key only when you set one.
 
 ```tmux
 set -g @plugin 'tmux-revamped/tmux-launcher-revamped'
 
 # add your own apps to the list
 set -g @launcher_apps 'lazygit yazi lazydocker htop k9s'
+
+# direct keys are opt-in; these are the keys lazygit and yazi used to default to
+set -g @launcher_lazygit_key 'C-g'
+set -g @launcher_yazi_key 'C-y'
 
 set -g @launcher_lazydocker_key 'C-d'
 set -g @launcher_htop_key 'C-t'
@@ -47,7 +51,7 @@ set -g @launcher_k9s_key 'C-s'
 | Option | Default | Meaning |
 |--------|---------|---------|
 | `@launcher_apps` | `lazygit yazi` | the apps to bind |
-| `@launcher_<id>_key` | built-in for `lazygit`/`yazi`, else required | the prefix key |
+| `@launcher_<id>_key` | none | the prefix key; the app gets no direct key until this is set, for example `C-g` for `lazygit` |
 | `@launcher_<id>_command` | the id itself | the shell command to run |
 | `@launcher_<id>_mode` | `popup` (`yazi` is `window`) | `popup`, `window`, or `split` |
 | `@launcher_<id>_name` | the id itself | window name, in `window` mode |
@@ -65,10 +69,10 @@ set -g @launcher_k9s_key 'C-s'
 | `@launcher_marker` | none | default marker for every app when no per-app marker is set |
 | `@launcher_max_depth` | `20` | how many levels the marker walk climbs |
 | `@launcher_skip_missing` | off | drop any app whose local command is absent (remote apps are not probed) |
-| `@launcher_menu_key` | none | key that opens a `display-menu` of every app (works below tmux 3.2) |
+| `@launcher_menu_key` | `M-a` | key that opens a `display-menu` of every app (works below tmux 3.2); `off` unbinds it |
 | `@launcher_picker_key` | none | key that opens an fzf app picker in a popup |
 
-An app listed without a key and without a built-in default is skipped, so a typo never produces a broken binding.
+An app listed without a key is reachable from the menu and gets no direct binding, so a typo never produces a broken binding.
 
 ## More launch modes
 
@@ -100,7 +104,7 @@ set -g @launcher_htop_mode 'split'
 # refresh the git status segment after lazygit quits
 set -g @launcher_lazygit_exit 'tmux refresh-client -S'
 
-# one menu key listing every app, and an fzf picker
+# move the menu off M-a, and add an fzf picker
 set -g @launcher_menu_key   'C-l'
 set -g @launcher_picker_key 'C-p'
 
@@ -153,7 +157,7 @@ With [TPM](https://github.com/tmux-plugins/tpm), add to `~/.tmux.conf`:
 set -g @plugin 'tmux-revamped/tmux-launcher-revamped'
 ```
 
-Then press `prefix + I` to install. Out of the box, `prefix + C-g` opens lazygit and `prefix + C-y` opens yazi.
+Then press `prefix + I` to install. Out of the box, `prefix + M-a` opens a menu with lazygit and yazi.
 
 Manual install:
 
