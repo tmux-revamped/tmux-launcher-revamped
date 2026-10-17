@@ -48,6 +48,20 @@ _window_exists() { _tmux select-window -t "=${1}" >/dev/null 2>&1; }
 # _first_word STR -> the first whitespace-delimited token of STR.
 _first_word() { printf '%s' "${1%% *}"; }
 
+_self_command() {
+  local out word
+  out="bash $(printf '%q' "${_SELF}")"
+  for word in "$@"; do
+    out="${out} $(printf '%q' "${word}")"
+  done
+  printf '%s' "${out}"
+}
+
+_tmux_quote() {
+  local quote="'" escaped="'\\''"
+  printf "'%s'" "${1//"${quote}"/${escaped}}"
+}
+
 # _launch EFF NAME PATH CMD WIDTH HEIGHT REUSE -> emit the launch for one app.
 _launch() {
   local eff="${1}" name="${2}" path="${3}" cmd="${4}" width="${5}" height="${6}" reuse="${7}"
@@ -169,9 +183,9 @@ _bind_app() {
 
   prompt="$(get_opt "@launcher_${id}_prompt" "")"
   if [[ -n "${prompt}" ]]; then
-    _tmux bind-key "${key}" command-prompt -p "${prompt}" "run-shell -b 'bash ${_SELF} dispatch ${id} %%'"
+    _tmux bind-key "${key}" command-prompt -p "${prompt}" "run-shell -b $(_tmux_quote "$(_self_command dispatch "${id}") %%")"
   else
-    _tmux bind-key "${key}" run-shell -b "bash ${_SELF} dispatch ${id}"
+    _tmux bind-key "${key}" run-shell -b "$(_self_command dispatch "${id}")"
   fi
 }
 
@@ -187,7 +201,7 @@ _bind_menu() {
   for id in ${apps}; do
     [[ -z "${id}" ]] && continue
     name="$(get_opt "@launcher_${id}_name" "${id}")"
-    args+=("${name}" "" "run-shell -b 'bash ${_SELF} dispatch ${id}'")
+    args+=("${name}" "" "run-shell -b $(_tmux_quote "$(_self_command dispatch "${id}")")")
   done
   _tmux bind-key "${key}" "${args[@]}"
 }
@@ -198,7 +212,7 @@ _bind_picker() {
   local key
   key="$(get_opt @launcher_picker_key "")"
   [[ -z "${key}" ]] && return 0
-  _tmux bind-key "${key}" display-popup -E "bash ${_SELF} pick"
+  _tmux bind-key "${key}" display-popup -E "$(_self_command pick)"
 }
 
 # apply_launcher -> bind every configured app plus the optional menu and picker.

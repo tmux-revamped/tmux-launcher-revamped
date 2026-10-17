@@ -272,3 +272,49 @@ teardown() {
   run bash "${SRC}" pick
   [[ "${output}" == *"run fzf"* ]]
 }
+
+@test "_bind_app - a plugin path with a space and a quote reaches sh as one word" {
+  # Arrange
+  _SELF="${TEST_TMPDIR}/my plug's/src/launcher.sh"
+  _tmux() { printf '%s' "${@: -1}"; }
+  local words
+
+  # Act
+  run _bind_app lazygit
+
+  # Assert
+  words="$(sh -c "printf '%s\n' ${output}")"
+  [[ "${words}" == "bash"$'\n'"${_SELF}"$'\n'"dispatch"$'\n'"lazygit" ]]
+}
+
+@test "_bind_menu - a plugin path with a space and a quote survives the menu command" {
+  # Arrange
+  tmux set-option -gq "@launcher_apps" "lazygit"
+  tmux set-option -gq "@launcher_menu_key" "C-l"
+  _SELF="${TEST_TMPDIR}/my plug's/src/launcher.sh"
+  _tmux() { printf '%s' "${@: -1}"; }
+  local words
+
+  # Act
+  run _bind_menu
+
+  # Assert
+  eval "set -- ${output#run-shell -b }"
+  words="$(sh -c "printf '%s\n' ${1}")"
+  [[ "${words}" == "bash"$'\n'"${_SELF}"$'\n'"dispatch"$'\n'"lazygit" ]]
+}
+
+@test "_bind_picker - a plugin path with a space and a quote reaches sh as one word" {
+  # Arrange
+  tmux set-option -gq "@launcher_picker_key" "C-p"
+  _SELF="${TEST_TMPDIR}/my plug's/src/launcher.sh"
+  _tmux() { printf '%s' "${@: -1}"; }
+  local words
+
+  # Act
+  run _bind_picker
+
+  # Assert
+  words="$(sh -c "printf '%s\n' ${output}")"
+  [[ "${words}" == "bash"$'\n'"${_SELF}"$'\n'"pick" ]]
+}
