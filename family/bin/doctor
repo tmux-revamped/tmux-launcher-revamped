@@ -28,7 +28,6 @@ Checks:
   - two members declaring the same status placeholder
   - two members writing the same tmux option
   - an option outside the @<plugin>_revamped_<name> grammar
-  - a member reading another member's option without declaring it
   - members reporting different family/VERSION values
 
 Exits 0 when clean, 1 when any finding is reported.
