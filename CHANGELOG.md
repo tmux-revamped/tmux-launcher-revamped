@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Key, menu, and picker bindings quote the plugin path, so an install
   directory containing a space or a single quote launches correctly.
+- The tmux version comparison no longer depends on `sort -V`, which some
+  `sort` implementations lack.
 
 ## [1.1.0] - 2026-06-30
 

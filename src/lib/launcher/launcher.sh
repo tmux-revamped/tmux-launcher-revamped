@@ -16,8 +16,15 @@ parse_tmux_version() {
 
 # version_ge HAVE WANT -> 0 when HAVE is greater than or equal to WANT.
 version_ge() {
-  [[ -n "${1}" && -n "${2}" ]] || return 1
-  [ "$(printf '%s\n%s\n' "${2}" "${1}" | sort -V | head -n1)" = "${2}" ]
+  local have_major have_minor want_major want_minor
+  [[ "${1}" =~ ^([0-9]+)(\.([0-9]+))? ]] || return 1
+  have_major="${BASH_REMATCH[1]}"
+  have_minor="${BASH_REMATCH[3]:-0}"
+  [[ "${2}" =~ ^([0-9]+)(\.([0-9]+))? ]] || return 1
+  want_major="${BASH_REMATCH[1]}"
+  want_minor="${BASH_REMATCH[3]:-0}"
+  (( 10#${have_major} > 10#${want_major} )) && return 0
+  (( 10#${have_major} == 10#${want_major} && 10#${have_minor} >= 10#${want_minor} ))
 }
 
 # effective_mode REQUESTED VERSION -> the mode that actually runs. popup is the

@@ -25,6 +25,28 @@ teardown() {
   ! version_ge "" 3.2
 }
 
+@test "launcher.sh - version_ge compares minor numbers numerically without sort" {
+  # Arrange
+  sort() { return 1; }
+
+  # Act
+  run version_ge 3.10 3.9
+
+  # Assert
+  [ "${status}" -eq 0 ]
+}
+
+@test "launcher.sh - version_ge rejects an older minor" {
+  # Arrange
+  local have="3.9" want="3.10"
+
+  # Act
+  run version_ge "${have}" "${want}"
+
+  # Assert
+  [ "${status}" -eq 1 ]
+}
+
 @test "launcher.sh - effective_mode gates popup on tmux 3.2" {
   [[ "$(effective_mode popup 3.5)" == "popup" ]]
   [[ "$(effective_mode popup 3.2)" == "popup" ]]
