@@ -44,7 +44,7 @@ effective_mode() {
 # ssh_wrap HOST CMD -> CMD wrapped in `ssh -t HOST` when HOST is set, else CMD.
 ssh_wrap() {
   if [[ -n "${1}" ]]; then
-    printf 'ssh -t %s %s' "${1}" "${2}"
+    printf 'ssh -t %q %q' "${1}" "${2}"
   else
     printf '%s' "${2}"
   fi

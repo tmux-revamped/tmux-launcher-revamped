@@ -67,6 +67,21 @@ teardown() {
   [[ "$(ssh_wrap '' lazygit)" == "lazygit" ]]
 }
 
+@test "launcher.sh - ssh_wrap runs pre and exit hooks on the remote host" {
+  # Arrange
+  mkdir -p "${TEST_TMPDIR}/bin"
+  printf '#!/bin/sh\nprintf "%%s\\n" "$@"\n' > "${TEST_TMPDIR}/bin/ssh"
+  chmod +x "${TEST_TMPDIR}/bin/ssh"
+  local wrapped
+
+  # Act
+  wrapped="$(ssh_wrap box.example 'echo pre && lazygit; echo post')"
+
+  # Assert
+  run env PATH="${TEST_TMPDIR}/bin:${PATH}" sh -c "${wrapped}"
+  [[ "${output}" == "-t"$'\n'"box.example"$'\n'"echo pre && lazygit; echo post" ]]
+}
+
 @test "launcher.sh - compose_command builds the bare command with no extras" {
   [[ "$(compose_command '' '' lazygit '')" == "lazygit" ]]
 }
