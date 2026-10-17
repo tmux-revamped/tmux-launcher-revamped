@@ -143,10 +143,29 @@ teardown() {
 }
 
 @test "dispatch - reuse skips a new window when one already exists" {
+  # Arrange
   tmux set-option -gq "@launcher_lazygit_mode" "window"
+  tmux set-option -gq "@launcher_lazygit_name" "git-ui"
   tmux set-option -gq "@launcher_lazygit_reuse" "on"
+  _window_exists() { echo "probe ${1}"; [[ "${1}" == "git-ui" ]]; }
+
+  # Act
   run dispatch lazygit
-  [[ -z "${output}" ]]
+
+  # Assert
+  [[ "${output}" == "probe git-ui" ]]
+}
+
+@test "_window_exists - probes the window by exact name and reports a miss" {
+  # Arrange
+  _tmux() { printf '%s' "$*" > "${TEST_TMPDIR}/probe"; return 1; }
+
+  # Act
+  run _window_exists git-ui
+
+  # Assert
+  [ "${status}" -eq 1 ]
+  [[ "$(cat "${TEST_TMPDIR}/probe")" == "select-window -t =git-ui" ]]
 }
 
 @test "dispatch - reuse creates a window when none exists" {
