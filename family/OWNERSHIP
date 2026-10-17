@@ -51,3 +51,4 @@ owned	family/docs/migration.md
 owned	family/bin/check-runner-drift
 owned	.github/actionlint.yaml
 owned	test/family/check-runner-drift.bats
+owned	test/family/sync.bats
