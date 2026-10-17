@@ -54,3 +54,4 @@ owned	test/family/check-runner-drift.bats
 owned	test/family/sync.bats
 owned	test/family/sweep.bats
 owned	test/family/doctor.bats
+owned	test/family/gen-readme.bats
