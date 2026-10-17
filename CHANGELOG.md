@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   metacharacters from the typed text.
 - A remote launcher quotes the whole composed command for `ssh`, so its
   pre and exit hooks run on the remote host instead of locally.
+- The fzf picker records the chosen app and dispatches it after its popup
+  closes, so a popup app no longer tries to open inside the picker popup.
 
 ## [1.1.0] - 2026-06-30
 

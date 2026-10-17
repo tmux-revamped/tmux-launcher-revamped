@@ -14,6 +14,7 @@
 PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 _SELF="${PLUGIN_DIR}/src/launcher.sh"
 _PROMPT_OPTION="@launcher_prompt_value"
+_PICKED_OPTION="@launcher_picked"
 
 # shellcheck source=/dev/null
 source "${PLUGIN_DIR}/src/lib/launcher/launcher.sh"
@@ -176,6 +177,13 @@ pick() {
   apps="$(get_opt @launcher_apps "lazygit yazi")"
   # shellcheck disable=SC2086
   choice="$(printf '%s\n' ${apps} | _run fzf)"
+  _tmux set-option -gq "${_PICKED_OPTION}" "${choice}"
+}
+
+dispatch_picked() {
+  local choice
+  choice="$(get_opt "${_PICKED_OPTION}" "")"
+  _tmux set-option -gqu "${_PICKED_OPTION}"
   [[ -z "${choice}" ]] && return 0
   dispatch "${choice}"
 }
@@ -228,7 +236,8 @@ _bind_picker() {
   local key
   key="$(get_opt @launcher_picker_key "")"
   [[ -z "${key}" ]] && return 0
-  _tmux bind-key "${key}" display-popup -E "$(_self_command pick)"
+  _tmux bind-key "${key}" display-popup -E "$(_self_command pick)" '\;' \
+    run-shell -b "$(_self_command dispatch-picked)"
 }
 
 # apply_launcher -> bind every configured app plus the optional menu and picker.
@@ -248,6 +257,7 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   case "${1:-}" in
     dispatch) shift; dispatch "$@" ;;
     pick)     pick ;;
+    dispatch-picked) dispatch_picked ;;
     *)        apply_launcher ;;
   esac
 fi

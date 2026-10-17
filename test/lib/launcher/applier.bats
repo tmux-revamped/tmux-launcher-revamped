@@ -271,17 +271,61 @@ teardown() {
   [[ "${output}" == *"display-popup -E bash"* ]]
 }
 
-@test "pick - a chosen app is dispatched" {
+@test "pick - a chosen app is recorded without launching inside the picker popup" {
+  # Arrange
   _run() { echo "lazygit"; }
+
+  # Act
   run pick
-  [[ "${output}" == *"display-popup"* ]]
-  [[ "${output}" == *"lazygit"* ]]
+
+  # Assert
+  [[ "${output}" == "tmux set-option -gq @launcher_picked lazygit" ]]
 }
 
-@test "pick - an empty choice launches nothing" {
+@test "pick - an empty choice records an empty pick" {
+  # Arrange
   _run() { printf ''; }
+
+  # Act
   run pick
-  [[ -z "${output}" ]]
+
+  # Assert
+  [[ "${output}" == "tmux set-option -gq @launcher_picked " ]]
+}
+
+@test "dispatch_picked - the recorded app is cleared and dispatched" {
+  # Arrange
+  tmux set-option -gq "@launcher_picked" "lazygit"
+
+  # Act
+  run dispatch_picked
+
+  # Assert
+  [[ "${output}" == "tmux set-option -gqu @launcher_picked"$'\n'"tmux display-popup -E -w 80% -h 80% -d /work/project lazygit" ]]
+}
+
+@test "dispatch_picked - no recorded app launches nothing" {
+  # Arrange
+  tmux set-option -gqu "@launcher_picked"
+
+  # Act
+  run dispatch_picked
+
+  # Assert
+  [[ "${output}" == "tmux set-option -gqu @launcher_picked" ]]
+}
+
+@test "_bind_picker - the chosen app is dispatched after the picker popup closes" {
+  # Arrange
+  tmux set-option -gq "@launcher_picker_key" "C-p"
+  _SELF="/opt/plug/src/launcher.sh"
+  _tmux() { printf '[%s]' "$@"; }
+
+  # Act
+  run _bind_picker
+
+  # Assert
+  [[ "${output}" == '[bind-key][C-p][display-popup][-E][bash /opt/plug/src/launcher.sh pick][\;][run-shell][-b][bash /opt/plug/src/launcher.sh dispatch-picked]' ]]
 }
 
 @test "entrypoint - running the script with no args applies the bindings" {
