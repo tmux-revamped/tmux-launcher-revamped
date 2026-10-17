@@ -21,8 +21,10 @@ teardown() {
 @test "launcher.sh - version_ge compares correctly" {
   version_ge 3.4 3.2
   version_ge 3.2 3.2
-  ! version_ge 3.1 3.2
-  ! version_ge "" 3.2
+  run version_ge 3.1 3.2
+  [ "${status}" -eq 1 ]
+  run version_ge "" 3.2
+  [ "${status}" -eq 1 ]
 }
 
 @test "launcher.sh - version_ge compares minor numbers numerically without sort" {
@@ -105,8 +107,10 @@ teardown() {
 }
 
 @test "launcher.sh - walk_up_marker rejects empty input" {
-  ! walk_up_marker "" .git
-  ! walk_up_marker /a/b ""
+  run walk_up_marker "" .git
+  [ "${status}" -eq 1 ]
+  run walk_up_marker /a/b ""
+  [ "${status}" -eq 1 ]
 }
 
 @test "launcher.sh - walk_up_marker walks to the root and stops" {

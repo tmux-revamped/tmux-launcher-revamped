@@ -8,7 +8,7 @@
 
 </div>
 
-**any** app · **popup, window, or split** · **tmux 1.9 to 3.5** · **83** tests · **95%+** coverage
+**any** app · **popup, window, or split** · **tmux 3.2 and later** · **95%+** coverage
 
 Bind a key to open `lazygit`, `yazi`, `lf`, `htop`, `k9s`, or any other terminal app, in a floating popup or a fresh window, always starting in the current pane's directory. You list the apps and set a key, command, mode, and size for each. Popups need tmux 3.2, so on older tmux a popup launcher falls back to a window automatically.
 
@@ -164,7 +164,7 @@ run-shell ~/.tmux/plugins/tmux-launcher-revamped/launcher-revamped.tmux
 
 ## Compatibility
 
-Works on every tmux version TPM supports, 1.9 and up, on Linux (x86_64 and arm64) and macOS (Intel and Apple Silicon). The `popup` mode uses `display-popup`, which is tmux 3.2 and up; on older tmux a popup launcher opens a window instead, so every binding still works. Each launcher runs whatever command you give it, so the app itself must be installed.
+Supported on tmux 3.2 and later, on Linux (x86_64 and arm64) and macOS (Intel and Apple Silicon). The `popup` mode is still version gated, so an older tmux opens a popup launcher as a window, but versions below 3.2 are not tested. Each launcher runs whatever command you give it, so the app itself must be installed.
 
 ## Development
 
