@@ -431,7 +431,10 @@ teardown() {
   # Arrange
   tmux set-option -gq "@launcher_picker_key" "C-p"
   _SELF="${TEST_TMPDIR}/my plug's/src/launcher.sh"
-  _tmux() { printf '%s' "${@: -1}"; }
+  _tmux() {
+    while [[ $# -gt 0 && "${1}" != "-E" ]]; do shift; done
+    printf '%s' "${2}"
+  }
   local words
 
   # Act
