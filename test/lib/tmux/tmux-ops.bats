@@ -101,3 +101,69 @@ teardown() {
   run get_pane_height "%1"
   [[ "${status}" -eq 0 ]]
 }
+
+use_option_server() {
+  TMUX_CALLS="${TEST_TMPDIR}/tmux-calls"
+  : >"${TMUX_CALLS}"
+  tmux() {
+    printf '%s\n' "$*" >>"${TMUX_CALLS}"
+    [ "${1}" = "show-option" ] || return 0
+    case "${3}" in
+      @empty)
+        if [ "${2}" = "-gqv" ]; then printf '\n'; else printf '@empty ""\n'; fi
+        ;;
+      @set)
+        if [ "${2}" = "-gqv" ]; then printf 'value\n'; else printf '@set value\n'; fi
+        ;;
+    esac
+    return 0
+  }
+}
+
+@test "tmux-ops.sh - get_tmux_option keeps an option explicitly set to empty" {
+  # Arrange
+  use_option_server
+
+  # Act
+  run get_tmux_option @empty fallback
+
+  # Assert
+  [ "${status}" -eq 0 ]
+  [ "${output}" = "" ]
+}
+
+@test "tmux-ops.sh - get_tmux_option returns the default for an unset option" {
+  # Arrange
+  use_option_server
+
+  # Act
+  run get_tmux_option @absent fallback
+
+  # Assert
+  [ "${output}" = "fallback" ]
+  [ "$(cat "${TMUX_CALLS}")" = "$(printf 'show-option -gqv @absent\nshow-option -gq @absent')" ]
+}
+
+@test "tmux-ops.sh - get_tmux_option returns a set value with one query" {
+  # Arrange
+  use_option_server
+
+  # Act
+  run get_tmux_option @set fallback
+
+  # Assert
+  [ "${output}" = "value" ]
+  [ "$(cat "${TMUX_CALLS}")" = "show-option -gqv @set" ]
+}
+
+@test "tmux-ops.sh - get_tmux_option with no default queries once" {
+  # Arrange
+  use_option_server
+
+  # Act
+  run get_tmux_option @absent
+
+  # Assert
+  [ "${output}" = "" ]
+  [ "$(cat "${TMUX_CALLS}")" = "show-option -gqv @absent" ]
+}
