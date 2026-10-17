@@ -1,15 +1,4 @@
 #!/usr/bin/env bash
-#
-# launcher.sh: bind keys that launch TUI apps in a popup, window, or split,
-# scoped to the current pane (or project root). Apps are listed in
-# @launcher_apps; each one reads its key, command, mode, name, size, and a set
-# of optional behaviours (guard, group, prompt, remote host, env, hooks, reuse)
-# from per-app options.
-#
-# Every tmux command and every external command goes through a single seam
-# (_tmux and _run). With LAUNCHER_DRY_RUN set, each seam prints its arguments
-# instead of running them, which is how the test suite validates the binding
-# matrix and the dispatch paths without a live tmux, a popup, or a real app.
 
 PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 _SELF="${PLUGIN_DIR}/src/launcher.sh"
@@ -21,33 +10,22 @@ source "${PLUGIN_DIR}/src/lib/launcher/launcher.sh"
 # shellcheck source=/dev/null
 source "${PLUGIN_DIR}/src/lib/utils/has-command.sh"
 
-# _tmux ARGS -> run a tmux command, or echo it under dry-run so the tests assert
-# the command string without a live tmux server.
-# A single-line seam keeps the dry-run and live paths on one reachable line.
 _tmux() { [[ -n "${LAUNCHER_DRY_RUN:-}" ]] && { echo "tmux $*"; return 0; }; command tmux "$@"; }
 
-# _run ARGS -> run an external command (the fzf picker), or echo it under dry-run.
 _run() { [[ -n "${LAUNCHER_DRY_RUN:-}" ]] && { echo "run $*"; return 0; }; "$@"; }
 
-# get_opt OPT DEFAULT -> the global option value, or DEFAULT when unset/empty.
 get_opt() {
   local v
   v="$(tmux show-option -gqv "${1}" 2>/dev/null)"
   echo "${v:-${2}}"
 }
 
-# _pane_path -> the current pane directory, resolved through the tmux seam.
 _pane_path() { _tmux display-message -p '#{pane_current_path}'; }
 
-# _guard PRED -> evaluate a launch predicate. Non-zero means do not launch. The
-# scoped path is exported as LAUNCHER_PATH so a predicate can test the target.
 _guard() { sh -c "${1}"; }
 
-# _window_exists NAME -> select an existing window by exact name. Success means
-# the window is already open, which the reuse path uses to avoid a duplicate.
 _window_exists() { _tmux select-window -t "=${1}" >/dev/null 2>&1; }
 
-# _first_word STR -> the first whitespace-delimited token of STR.
 _first_word() { printf '%s' "${1%% *}"; }
 
 _self_command() {
@@ -76,7 +54,6 @@ _tmux_quote() {
   printf "'%s'" "${1//"${quote}"/${escaped}}"
 }
 
-# _launch EFF NAME PATH CMD WIDTH HEIGHT REUSE -> emit the launch for one app.
 _launch() {
   local eff="${1}" name="${2}" path="${3}" cmd="${4}" width="${5}" height="${6}" reuse="${7}"
   case "${eff}" in
@@ -95,9 +72,6 @@ _launch() {
   esac
 }
 
-# _launch_group MEMBERS PATH -> open a dashboard: the first member in a new
-# window, the rest split beside it, then a tiled layout. Members reuse each
-# app's configured command.
 _launch_group() {
   local members="${1}" path="${2}" first=1 m mcmd
   # shellcheck disable=SC2086
@@ -116,8 +90,6 @@ _launch_group() {
   return 0
 }
 
-# dispatch ID [ARG] -> resolve one app's config and launch it. This is the
-# single launch path; both the key bindings and the picker route through it.
 dispatch() {
   local id="${1:-}" arg
   [[ -z "${id}" ]] && return 0
@@ -171,7 +143,6 @@ dispatch() {
   _launch "${eff}" "${name}" "${scope}" "${full}" "${width}" "${height}" "${reuse}"
 }
 
-# pick -> fzf over the app list, then dispatch the chosen app.
 pick() {
   local apps choice
   apps="$(get_opt @launcher_apps "lazygit yazi")"
@@ -188,9 +159,6 @@ dispatch_picked() {
   dispatch "${choice}"
 }
 
-# _bind_app ID -> wire one app's key to dispatch. An app with no key set, or a
-# missing local command when skip-missing is on, binds nothing. A prompt option
-# routes through command-prompt so the typed value is appended to the command.
 _bind_app() {
   local id="${1}" key cmd prompt host skip first
   key="$(get_opt "@launcher_${id}_key" "")"
@@ -213,8 +181,6 @@ _bind_app() {
   fi
 }
 
-# _bind_menu -> bind a global menu (display-menu, available below 3.2) listing
-# every app on @launcher_menu_key, M-a unless set, and "off" binds nothing.
 _bind_menu() {
   local key apps id name args
   key="$(get_opt @launcher_menu_key "M-a")"
@@ -230,8 +196,6 @@ _bind_menu() {
   _tmux bind-key "${key}" "${args[@]}"
 }
 
-# _bind_picker -> bind the fzf app picker inside a popup. Nothing is bound unless
-# @launcher_picker_key is set.
 _bind_picker() {
   local key
   key="$(get_opt @launcher_picker_key "")"
@@ -240,7 +204,6 @@ _bind_picker() {
     run-shell -b "$(_self_command dispatch-picked)"
 }
 
-# apply_launcher -> bind every configured app plus the optional menu and picker.
 apply_launcher() {
   local apps id
   apps="$(get_opt @launcher_apps "lazygit yazi")"

@@ -10,8 +10,6 @@ setup() {
   export LAUNCHER_DRY_RUN=1
   # shellcheck source=/dev/null
   source "${SRC}"
-  # Deterministic seams: a fixed tmux version and a fixed pane path so launch
-  # strings are stable. No real tmux, no real app, no popup is ever touched.
   _tmux_version_string() { echo "tmux 3.5"; }
   _pane_path() { echo "/work/project"; }
 }
