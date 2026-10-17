@@ -8,6 +8,7 @@ setup() {
   setup_test_environment
   unset _LAUNCHER_REVAMPED_LOADED
   export LAUNCHER_DRY_RUN=1
+  # shellcheck source=/dev/null
   source "${SRC}"
   # Deterministic seams: a fixed tmux version and a fixed pane path so launch
   # strings are stable. No real tmux, no real app, no popup is ever touched.
