@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.1](https://github.com/tmux-revamped/tmux-launcher-revamped/compare/v3.0.0...v3.0.1) (2026-11-16)
+
+
+### Bug Fixes
+
+* bind the other keys when one key is invalid ([c6725cd](https://github.com/tmux-revamped/tmux-launcher-revamped/commit/c6725cda2d1c468bb5726cdaba87128d3bdb2159))
+
 # [3.0.0](https://github.com/tmux-revamped/tmux-launcher-revamped/compare/v2.0.0...v3.0.0) (2026-11-16)
 
 
