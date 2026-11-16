@@ -40,7 +40,16 @@ windows() {
 }
 
 start_in() {
+  local want now tries=0
+  want=$(cd "$1" && pwd -P)
   tmux respawn-pane -k -t test -c "$1"
+  now=$(tmux display-message -p -t test '#{pane_current_path}')
+  while [[ "${now}" != "${want}" ]]; do
+    tries=$((tries + 1))
+    [[ "${tries}" -le 300 ]] || return 1
+    sleep 0.01
+    now=$(tmux display-message -p -t test '#{pane_current_path}')
+  done
 }
 
 @test "entrypoint - loading binds the menu over every app" {
