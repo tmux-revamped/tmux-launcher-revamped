@@ -31,16 +31,20 @@ key_binding() {
 }
 
 launch() {
-  LAUNCH_PANE=$(tmux display-message -p -t test '#{pane_id}')
+  local pane
+  pane=$(tmux display-message -p -t test '#{pane_id}')
   # shellcheck disable=SC2086
-  TMUX="${TMUX_SOCKET},1,0" TMUX_PANE="${LAUNCH_PANE}" run --separate-stderr ${REVAMPED_TEST_SHELL:-sh} "${ROOT}/bin/launcher-revamped" launch "$@"
-  LAUNCH_STDERR="${stderr}"
+  TMUX="${TMUX_SOCKET},1,0" TMUX_PANE="${pane}" run --separate-stderr ${REVAMPED_TEST_SHELL:-sh} "${ROOT}/bin/launcher-revamped" launch "$@"
 }
 
-launch_report() {
-  printf 'launch pane: %s\nlaunch stderr: %s\n' "${LAUNCH_PANE}" "${LAUNCH_STDERR}"
-  tmux list-panes -a -F '#{session_name}:#{window_name} #{pane_id} #{pane_current_path}'
-  return 1
+settled_windows() {
+  local tries=0
+  run windows
+  while [[ "${lines[1]:-}" != "$1" && "${tries}" -lt 300 ]]; do
+    tries=$((tries + 1))
+    sleep 0.01
+    run windows
+  done
 }
 
 windows() {
@@ -143,8 +147,8 @@ start_in() {
 
   # Assert
   [[ "${status}" -eq 0 ]]
-  run windows
-  [[ "${lines[1]}" == "demo 1 ${root}" ]] || launch_report
+  settled_windows "demo 1 ${root}"
+  [[ "${lines[1]}" == "demo 1 ${root}" ]]
 }
 
 @test "launch - a split opens beside the work in the pane's folder" {
