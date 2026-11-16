@@ -48,4 +48,6 @@ Guidance for anyone, human or agent, changing tmux-launcher-revamped. What it is
 
 ## Gaps against FAMILY.md
 
-As of 2026-11-16, none.
+As of 2026-11-16:
+
+- No test presses its keys through a real client; the suites check the bound commands and call them directly, so what tmux does to a binding's own command goes untested.
