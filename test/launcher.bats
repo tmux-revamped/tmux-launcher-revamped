@@ -204,6 +204,8 @@ plan_at() {
   [[ "${output}" == "1" ]]
   run grep -c '|Launchers|lazygit||run-shell' "${REVAMPED_TEST_TMUX_ARGV}"
   [[ "${output}" == "1" ]]
+  run grep -c '|;$' "${REVAMPED_TEST_TMUX_ARGV}"
+  [[ "${output}" == "0" ]]
 }
 
 @test "launcher - apply calls tmux for nothing when no key is bound" {

@@ -230,14 +230,16 @@ launcher_revamped_plan() {
 launcher_revamped_send() {
   launcher_revamped_send_plan="$1"
   set --
+  launcher_revamped_send_sep=""
   while IFS= read -r launcher_revamped_send_line; do
-    if [ "${launcher_revamped_send_line}" = "${LAUNCHER_REVAMPED_EMPTY}" ]; then
-      set -- "$@" ""
-    elif [ -n "${launcher_revamped_send_line}" ]; then
-      set -- "$@" "${launcher_revamped_send_line}"
-    elif [ "$#" -gt 0 ]; then
-      set -- "$@" ";"
+    if [ -z "${launcher_revamped_send_line}" ]; then
+      [ "$#" -eq 0 ] || launcher_revamped_send_sep=";"
+      continue
     fi
+    [ -z "${launcher_revamped_send_sep}" ] || set -- "$@" "${launcher_revamped_send_sep}"
+    launcher_revamped_send_sep=""
+    [ "${launcher_revamped_send_line}" != "${LAUNCHER_REVAMPED_EMPTY}" ] || launcher_revamped_send_line=""
+    set -- "$@" "${launcher_revamped_send_line}"
   done <<PLAN
 ${launcher_revamped_send_plan}
 PLAN
