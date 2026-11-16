@@ -28,7 +28,7 @@ Guidance for anyone, human or agent, changing tmux-launcher-revamped. What it is
 ## Behaviour
 
 - `apply` reads the globals and every app's fields with two `tmux display-message` calls and one `env` read, reads `list-keys` once for the menu key, builds the plan, and sends every binding to tmux in one call separated by `;`.
-- `launch` reads the globals, the app's fields and the pane's folder with one `tmux display-message` call. A group reads its members' fields with one more and opens them in one call.
+- `launch` reads the globals, the app's fields and the pane's folder with one `tmux display-message` call. Every launch binding passes `TMUX_PANE=#{pane_id}`, which tmux expands for the pane the key was pressed in, and `launch` targets that pane; run from a shell, it targets the shell's own pane through the same variable. A group reads its members' fields with one more and opens them in one call.
 - An empty tmux option means its default; an empty environment variable or long option leaves that key unbound.
 - The plan holds one argument per line and a blank line between commands; an empty argument, the menu items' shortcut key, is written as `''` and sent to tmux as an empty string.
 - A menu key the person bound before the plugin loaded stays theirs, and `doctor` reports it.

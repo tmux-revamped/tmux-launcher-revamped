@@ -31,8 +31,10 @@ key_binding() {
 }
 
 launch() {
+  local pane
+  pane=$(tmux display-message -p -t test '#{pane_id}')
   # shellcheck disable=SC2086
-  TMUX="${TMUX_SOCKET},1,0" run --separate-stderr ${REVAMPED_TEST_SHELL:-sh} "${ROOT}/bin/launcher-revamped" launch "$@"
+  TMUX="${TMUX_SOCKET},1,0" TMUX_PANE="${pane}" run --separate-stderr ${REVAMPED_TEST_SHELL:-sh} "${ROOT}/bin/launcher-revamped" launch "$@"
 }
 
 windows() {

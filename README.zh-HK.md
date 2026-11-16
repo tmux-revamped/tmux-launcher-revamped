@@ -21,7 +21,7 @@
 </div>
 
 <p align="center">
-  <img src="screens/hero.gif" alt="prefix M-a 開啟啟動器選單，lazygit 在項目根目錄以彈出視窗開啟" width="800">
+  <img src="screens/hero.gif" alt="prefix M-a 開啟啟動器選單，tig 在項目根目錄以彈出視窗開啟" width="800">
 </p>
 
 ```console
@@ -155,10 +155,10 @@ set -g @launcher_revamped_dash_group 'lazygit htop'
 <table>
 <tr>
 <td width="50%" valign="top"><img src="screens/menu.png" alt="launcher-revamped：prefix M-a 上的應用程式選單"><br><sub>prefix M-a 上的應用程式選單，來自 <code>apps.tape</code></sub></td>
-<td width="50%" valign="top"><img src="screens/popup.png" alt="launcher-revamped：在項目根目錄以彈出視窗開啟的 lazygit"><br><sub>在項目根目錄以彈出視窗開啟的 lazygit，來自 <code>apps.tape</code></sub></td>
+<td width="50%" valign="top"><img src="screens/popup.png" alt="launcher-revamped：在項目根目錄以彈出視窗開啟的 tig"><br><sub>在項目根目錄以彈出視窗開啟的 tig，來自 <code>apps.tape</code></sub></td>
 </tr>
 <tr>
-<td width="50%" valign="top"><img src="screens/window.png" alt="launcher-revamped：在獨立視窗中開啟的 tig"><br><sub>在獨立視窗中開啟的 tig，來自 <code>apps.tape</code></sub></td>
+<td width="50%" valign="top"><img src="screens/window.png" alt="launcher-revamped：在獨立視窗中開啟的 vim"><br><sub>在獨立視窗中開啟的 vim，來自 <code>apps.tape</code></sub></td>
 <td width="50%" valign="top"><img src="screens/split.png" alt="launcher-revamped：工作旁邊的分割窗格"><br><sub>工作旁邊的分割窗格，來自 <code>apps.tape</code></sub></td>
 </tr>
 <tr>

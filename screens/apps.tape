@@ -18,27 +18,29 @@ Sleep 2s
 Screenshot menu.png
 Sleep 1s
 Enter
-Sleep 4s
+Sleep 3s
 Screenshot popup.png
 Sleep 1s
 Type "q"
 Sleep 2s
 Hide
 Ctrl+]
-Type@5ms "prefix T"
+Type@5ms "prefix V"
 Enter
 Show
 Ctrl+B
-Type@1ms "T"
+Type@1ms "V"
 Sleep 3s
 Screenshot window.png
 Sleep 1s
 Hide
 Ctrl+]
-Type@5ms "q"
+Type@5ms ":q Enter"
 Enter
 Show
-Type "q"
+Type ":q"
+Sleep 1s
+Enter
 Sleep 2s
 Hide
 Ctrl+]
@@ -75,13 +77,13 @@ Type "q"
 Sleep 2s
 Hide
 Ctrl+]
-Type@5ms "prefix P, tig, Enter"
+Type@5ms "prefix P, notes, Enter"
 Enter
 Show
 Ctrl+B
 Type@1ms "P"
 Sleep 2s
-Type "tig"
+Type "notes"
 Sleep 1s
 Screenshot picker.png
 Sleep 1s

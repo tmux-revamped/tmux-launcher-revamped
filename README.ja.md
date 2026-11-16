@@ -21,7 +21,7 @@
 </div>
 
 <p align="center">
-  <img src="screens/hero.gif" alt="prefix M-a でランチャーのメニューを開き、lazygit をプロジェクトのルートでポップアップとして開く tmux" width="800">
+  <img src="screens/hero.gif" alt="prefix M-a でランチャーのメニューを開き、tig をプロジェクトのルートでポップアップとして開く tmux" width="800">
 </p>
 
 ```console
@@ -155,10 +155,10 @@ yazi、lf、ranger のように画像をプレビューするファイルマネ�
 <table>
 <tr>
 <td width="50%" valign="top"><img src="screens/menu.png" alt="launcher-revamped: prefix M-a のアプリのメニュー"><br><sub>prefix M-a のアプリのメニュー。<code>apps.tape</code>より</sub></td>
-<td width="50%" valign="top"><img src="screens/popup.png" alt="launcher-revamped: プロジェクトのルートでポップアップに開いた lazygit"><br><sub>プロジェクトのルートでポップアップに開いた lazygit。<code>apps.tape</code>より</sub></td>
+<td width="50%" valign="top"><img src="screens/popup.png" alt="launcher-revamped: プロジェクトのルートでポップアップに開いた tig"><br><sub>プロジェクトのルートでポップアップに開いた tig。<code>apps.tape</code>より</sub></td>
 </tr>
 <tr>
-<td width="50%" valign="top"><img src="screens/window.png" alt="launcher-revamped: 専用のウィンドウで開いた tig"><br><sub>専用のウィンドウで開いた tig。<code>apps.tape</code>より</sub></td>
+<td width="50%" valign="top"><img src="screens/window.png" alt="launcher-revamped: 専用のウィンドウで開いた vim"><br><sub>専用のウィンドウで開いた vim。<code>apps.tape</code>より</sub></td>
 <td width="50%" valign="top"><img src="screens/split.png" alt="launcher-revamped: 作業の横の分割"><br><sub>作業の横の分割。<code>apps.tape</code>より</sub></td>
 </tr>
 <tr>

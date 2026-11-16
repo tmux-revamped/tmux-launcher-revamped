@@ -73,7 +73,7 @@ plan_at() {
   plan_at 3.6
 
   # Assert
-  [[ "${lines[0]}" == "bind-key -N Launch lazygit C-g run-shell -b '"*"/bin/launcher-revamped' launch 'lazygit'" ]]
+  [[ "${lines[0]}" == "bind-key -N Launch lazygit C-g run-shell -b TMUX_PANE=#{pane_id} '"*"/bin/launcher-revamped' launch 'lazygit'" ]]
 }
 
 @test "launcher - an app prompt sends the typed words through a tmux option" {
@@ -165,7 +165,7 @@ plan_at() {
   plan_at 3.6
 
   # Assert
-  [[ "${lines[0]}" == "bind-key -N Pick an app P display-popup -E '"*"/bin/launcher-revamped' pick \\; run-shell -b '"*"/bin/launcher-revamped' launch-picked" ]]
+  [[ "${lines[0]}" == "bind-key -N Pick an app P display-popup -E '"*"/bin/launcher-revamped' pick \\; run-shell -b TMUX_PANE=#{pane_id} '"*"/bin/launcher-revamped' launch-picked" ]]
 }
 
 @test "launcher - the tool path doubles a hash and escapes a quote" {

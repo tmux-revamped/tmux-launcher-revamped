@@ -21,7 +21,7 @@ English &nbsp;|&nbsp; [日本語](README.ja.md) &nbsp;|&nbsp; [简体中文](REA
 </div>
 
 <p align="center">
-  <img src="screens/hero.gif" alt="prefix M-a opens the launcher menu and lazygit opens in a popup at the project root" width="800">
+  <img src="screens/hero.gif" alt="prefix M-a opens the launcher menu and tig opens in a popup at the project root" width="800">
 </p>
 
 ```console
@@ -155,10 +155,10 @@ The command is built as `pre && env VARS command ARGS; exit`, and a host wraps a
 <table>
 <tr>
 <td width="50%" valign="top"><img src="screens/menu.png" alt="launcher-revamped: The menu of every app on prefix M-a"><br><sub>The menu of every app on prefix M-a, from <code>apps.tape</code></sub></td>
-<td width="50%" valign="top"><img src="screens/popup.png" alt="launcher-revamped: lazygit in a popup at the project root"><br><sub>lazygit in a popup at the project root, from <code>apps.tape</code></sub></td>
+<td width="50%" valign="top"><img src="screens/popup.png" alt="launcher-revamped: tig in a popup at the project root"><br><sub>tig in a popup at the project root, from <code>apps.tape</code></sub></td>
 </tr>
 <tr>
-<td width="50%" valign="top"><img src="screens/window.png" alt="launcher-revamped: tig in a window of its own"><br><sub>tig in a window of its own, from <code>apps.tape</code></sub></td>
+<td width="50%" valign="top"><img src="screens/window.png" alt="launcher-revamped: vim in a window of its own"><br><sub>vim in a window of its own, from <code>apps.tape</code></sub></td>
 <td width="50%" valign="top"><img src="screens/split.png" alt="launcher-revamped: A split beside the work"><br><sub>A split beside the work, from <code>apps.tape</code></sub></td>
 </tr>
 <tr>

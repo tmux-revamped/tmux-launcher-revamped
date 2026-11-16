@@ -21,7 +21,7 @@
 </div>
 
 <p align="center">
-  <img src="screens/hero.gif" alt="prefix M-a 打开启动器菜单，lazygit 在项目根目录以弹出窗口打开" width="800">
+  <img src="screens/hero.gif" alt="prefix M-a 打开启动器菜单，tig 在项目根目录以弹出窗口打开" width="800">
 </p>
 
 ```console
@@ -155,10 +155,10 @@ set -g @launcher_revamped_dash_group 'lazygit htop'
 <table>
 <tr>
 <td width="50%" valign="top"><img src="screens/menu.png" alt="launcher-revamped：prefix M-a 上的应用菜单"><br><sub>prefix M-a 上的应用菜单，来自 <code>apps.tape</code></sub></td>
-<td width="50%" valign="top"><img src="screens/popup.png" alt="launcher-revamped：在项目根目录以弹出窗口打开的 lazygit"><br><sub>在项目根目录以弹出窗口打开的 lazygit，来自 <code>apps.tape</code></sub></td>
+<td width="50%" valign="top"><img src="screens/popup.png" alt="launcher-revamped：在项目根目录以弹出窗口打开的 tig"><br><sub>在项目根目录以弹出窗口打开的 tig，来自 <code>apps.tape</code></sub></td>
 </tr>
 <tr>
-<td width="50%" valign="top"><img src="screens/window.png" alt="launcher-revamped：在独立窗口中打开的 tig"><br><sub>在独立窗口中打开的 tig，来自 <code>apps.tape</code></sub></td>
+<td width="50%" valign="top"><img src="screens/window.png" alt="launcher-revamped：在独立窗口中打开的 vim"><br><sub>在独立窗口中打开的 vim，来自 <code>apps.tape</code></sub></td>
 <td width="50%" valign="top"><img src="screens/split.png" alt="launcher-revamped：工作旁边的分割窗格"><br><sub>工作旁边的分割窗格，来自 <code>apps.tape</code></sub></td>
 </tr>
 <tr>

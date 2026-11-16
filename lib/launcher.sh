@@ -50,9 +50,17 @@ launcher_revamped_resolve() {
   '
 }
 
+launcher_revamped_display() {
+  if [ -n "${TMUX_PANE:-}" ]; then
+    tmux display-message -p -t "${TMUX_PANE}" "$1" 2>/dev/null
+    return
+  fi
+  tmux display-message -p "$1" 2>/dev/null
+}
+
 launcher_revamped_load() {
   launcher_revamped_load_format=$(launcher_revamped_format "$1")
-  launcher_revamped_load_live=$(tmux display-message -p "#{pane_current_path}${launcher_revamped_load_format}" 2>/dev/null) || launcher_revamped_load_live=""
+  launcher_revamped_load_live=$(launcher_revamped_display "#{pane_current_path}${launcher_revamped_load_format}") || launcher_revamped_load_live=""
   # shellcheck disable=SC2034
   LAUNCHER_REVAMPED_PATH="${launcher_revamped_load_live%%	*}"
   launcher_revamped_load_values=$(launcher_revamped_resolve "$1" "${launcher_revamped_load_live}")
@@ -143,7 +151,7 @@ launcher_revamped_plan_app() {
   launcher_revamped_field "$1" name
   launcher_revamped_plan_app_note="Launch ${LAUNCHER_REVAMPED_VALUE}"
   launcher_revamped_plan_app_id=$(launcher_revamped_quote "$1")
-  launcher_revamped_plan_app_run="${LAUNCHER_REVAMPED_TOOL} launch ${launcher_revamped_plan_app_id}"
+  launcher_revamped_plan_app_run="TMUX_PANE=#{pane_id} ${LAUNCHER_REVAMPED_TOOL} launch ${launcher_revamped_plan_app_id}"
   launcher_revamped_field "$1" prompt
   if [ -z "${LAUNCHER_REVAMPED_VALUE}" ]; then
     launcher_revamped_bind "${launcher_revamped_plan_app_key}" "${launcher_revamped_plan_app_note}" run-shell -b "${launcher_revamped_plan_app_run}"
@@ -163,7 +171,7 @@ launcher_revamped_menu_items() {
   for launcher_revamped_menu_items_id in ${LAUNCHER_REVAMPED_S_apps}; do
     launcher_revamped_field "${launcher_revamped_menu_items_id}" name
     launcher_revamped_menu_items_quoted=$(launcher_revamped_quote "${launcher_revamped_menu_items_id}")
-    launcher_revamped_menu_items_run=$(launcher_revamped_quote "${LAUNCHER_REVAMPED_TOOL} launch ${launcher_revamped_menu_items_quoted}")
+    launcher_revamped_menu_items_run=$(launcher_revamped_quote "TMUX_PANE=#{pane_id} ${LAUNCHER_REVAMPED_TOOL} launch ${launcher_revamped_menu_items_quoted}")
     printf '%s\n%s\n%s\n' "${LAUNCHER_REVAMPED_VALUE}" "${LAUNCHER_REVAMPED_EMPTY}" "run-shell -b ${launcher_revamped_menu_items_run}"
   done
   set +f
@@ -199,7 +207,7 @@ EOF
 launcher_revamped_plan_picker() {
   [ -n "${LAUNCHER_REVAMPED_S_picker_key}" ] || return 0
   launcher_revamped_plan_picker_then='\;'
-  launcher_revamped_bind "${LAUNCHER_REVAMPED_S_picker_key}" "Pick an app" display-popup -E "${LAUNCHER_REVAMPED_TOOL} pick" "${launcher_revamped_plan_picker_then}" run-shell -b "${LAUNCHER_REVAMPED_TOOL} launch-picked"
+  launcher_revamped_bind "${LAUNCHER_REVAMPED_S_picker_key}" "Pick an app" display-popup -E "${LAUNCHER_REVAMPED_TOOL} pick" "${launcher_revamped_plan_picker_then}" run-shell -b "TMUX_PANE=#{pane_id} ${LAUNCHER_REVAMPED_TOOL} launch-picked"
 }
 
 launcher_revamped_plan() {
