@@ -249,7 +249,28 @@ PLAN
 
 launcher_revamped_apply() {
   launcher_revamped_plan
-  launcher_revamped_send "${LAUNCHER_REVAMPED_PLAN}"
+  launcher_revamped_send "${LAUNCHER_REVAMPED_PLAN}" 2>/dev/null || launcher_revamped_apply_each
+}
+
+launcher_revamped_apply_each() {
+  launcher_revamped_apply_each_status=0
+  set --
+  while IFS= read -r launcher_revamped_apply_each_line; do
+    if [ "${launcher_revamped_apply_each_line}" = "${LAUNCHER_REVAMPED_EMPTY}" ]; then
+      set -- "$@" ""
+      continue
+    fi
+    if [ -n "${launcher_revamped_apply_each_line}" ]; then
+      set -- "$@" "${launcher_revamped_apply_each_line}"
+      continue
+    fi
+    [ "$#" -gt 0 ] || continue
+    tmux "$@" || launcher_revamped_apply_each_status=1
+    set --
+  done <<PLAN
+${LAUNCHER_REVAMPED_PLAN}
+PLAN
+  return "${launcher_revamped_apply_each_status}"
 }
 
 launcher_revamped_lines() {
