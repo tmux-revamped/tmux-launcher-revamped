@@ -1,5 +1,37 @@
 # Changelog
 
+# [3.0.0](https://github.com/tmux-revamped/tmux-launcher-revamped/compare/v2.0.0...v3.0.0) (2026-11-16)
+
+
+* feat!: rewrite the plugin in POSIX sh ([29806d3](https://github.com/tmux-revamped/tmux-launcher-revamped/commit/29806d3074152f97c46b8102e022fa7a09801663))
+
+
+### Bug Fixes
+
+* **family:** fail when git cannot read a mode ([52896c8](https://github.com/tmux-revamped/tmux-launcher-revamped/commit/52896c84c1b41beb91b5183294078c95c4235ef9))
+* **family:** honor only active exceptions ([f79ff15](https://github.com/tmux-revamped/tmux-launcher-revamped/commit/f79ff153059cf66926f4ca3cc136d074bb626b5d))
+* **family:** reject unquoted replacements ([e1a81ad](https://github.com/tmux-revamped/tmux-launcher-revamped/commit/e1a81add4f21d5864970c3a3541916a3bc5a415d))
+* **family:** require executable entry points ([dfc56c8](https://github.com/tmux-revamped/tmux-launcher-revamped/commit/dfc56c8959f12fd5397baff6ac1cae4283fef155))
+* launch in the pane the key was pressed in ([4ee3580](https://github.com/tmux-revamped/tmux-launcher-revamped/commit/4ee3580f8c315efada4577a87dff67b1b1d9b40a))
+
+
+### Features
+
+* add a shared desktop notifier ([10124ef](https://github.com/tmux-revamped/tmux-launcher-revamped/commit/10124efe21ccf4331215417485539124c9189c3f))
+* **family:** accept bot updates in the audit ([e78584e](https://github.com/tmux-revamped/tmux-launcher-revamped/commit/e78584e7bf1a9e95016b66d9b0d3bce2c48985aa))
+
+
+### BREAKING CHANGES
+
+* every option is renamed and the old names no longer
+work. @launcher_<setting> becomes @launcher_revamped_<setting> for
+apps, menu_key, picker_key, marker, max_depth and skip_missing, and
+@launcher_<id>_<field> becomes @launcher_revamped_<id>_<field> for
+every per-app field. The menu key's off value is none, where it was
+off. The internal options are @launcher_revamped_typed and
+@launcher_revamped_picked. LAUNCHER_DRY_RUN is gone; use
+launcher-revamped list.
+
 All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
