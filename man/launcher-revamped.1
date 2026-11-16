@@ -1,0 +1,231 @@
+.TH LAUNCHER-REVAMPED 1 "2026-11-16" "launcher-revamped" "User Commands"
+.SH NAME
+launcher-revamped \- terminal apps one key away in tmux
+.SH SYNOPSIS
+.B launcher-revamped
+.RI [ options ]
+.B apply
+.br
+.B launcher-revamped
+.RB [ \-\-json ]
+.B list
+.br
+.B launcher-revamped launch
+.I id
+.RI [ arg ...]
+.br
+.B launcher-revamped pick
+.br
+.B launcher-revamped launch\-picked
+.br
+.B launcher-revamped doctor
+.br
+.B launcher-revamped version
+.br
+.B launcher-revamped help
+.SH DESCRIPTION
+.B launcher-revamped
+opens the terminal apps you list, such as lazygit, yazi or htop, in a tmux
+popup, window or split that starts in the current pane's folder. A menu on
+.B prefix M\-a
+lists every app, and any app can have a key of its own. The entry point
+.B launcher-revamped.tmux
+runs
+.B apply
+once when tmux loads the plugin, and every binding goes to tmux in one call.
+A menu key the person bound before the plugin loaded stays theirs.
+.PP
+Run with no command on a terminal, it offers a menu.
+.SH COMMANDS
+.TP
+.B apply
+Bind every key now.
+.TP
+.B list
+Print every binding apply would make, one per line.
+.TP
+.BI launch " id"
+Open the app
+.IR id .
+Each word after it is appended to the app's command as one quoted argument.
+.TP
+.B pick
+Choose an app with
+.BR fzf (1)
+and record it in the tmux option
+.BR @launcher_revamped_picked .
+.TP
+.B launch\-picked
+Open the app pick recorded, and clear it.
+.TP
+.B doctor
+Print one row per dependency: tmux, the core tools, fzf for the picker, each
+app's command, a menu key the person had already bound, and gum. The app rows
+appear only when no core tool is missing. Exits 1 only when a required tool
+is missing.
+.TP
+.B version
+Print the version, then the tmux version.
+.TP
+.B help
+Print the help page.
+.SH OPTIONS
+.TP
+.B \-\-json
+.B list
+prints one JSON object.
+.TP
+.BI \-\-theme " name"
+Colours of the terminal interface:
+.BR kodougu ,
+.BR catppuccin\-mocha ,
+.BR catppuccin\-latte ,
+.BR dracula ,
+.BR nord ,
+.BR gruvbox ,
+.B tokyo\-night
+or
+.BR mono .
+The default is
+.BR kodougu .
+.TP
+.BI \-\- setting " value"
+Any tmux option below, named with dashes, such as
+.B \-\-menu\-key
+or
+.BR \-\-lazygit\-key .
+It also takes the form
+.IR \-\-setting = value .
+.SH ENVIRONMENT
+.TP
+.B LAUNCHER_REVAMPED_SETTING
+Any tmux option below in capitals, such as
+.BR LAUNCHER_REVAMPED_LAZYGIT_KEY .
+The command line wins over the environment, and the environment over the
+tmux option. An empty value leaves that key unbound.
+.TP
+.B LAUNCHER_REVAMPED_THEME
+The theme when
+.B \-\-theme
+is not given.
+.TP
+.B LAUNCHER_REVAMPED_ACCENT
+A colour such as #CBA6F7 that replaces the accent of the theme.
+.TP
+.B KODOUGU_THEME
+The theme of every kodougu and tmux-revamped tool, when neither
+.B \-\-theme
+nor
+.B LAUNCHER_REVAMPED_THEME
+is set.
+.TP
+.B KODOUGU_ACCENT
+The accent of every kodougu and tmux-revamped tool, when
+.B LAUNCHER_REVAMPED_ACCENT
+is not set.
+.TP
+.B NO_COLOR
+Turns colour off in every theme.
+.TP
+.B LAUNCHER_PATH
+Set for an app's
+.B _if
+check: the folder the app would start in.
+.SH TMUX OPTIONS
+An empty tmux option means its default.
+.TP
+.B @launcher_revamped_apps
+The app IDs the menu lists and the keys come from. The default is
+.BR "lazygit yazi" .
+.TP
+.B @launcher_revamped_menu_key
+The prefix key for the menu of every app. The default is
+.BR M\-a ;
+.B none
+binds no menu.
+.TP
+.B @launcher_revamped_picker_key
+The prefix key for the fzf app picker. Unbound until set.
+.TP
+.B @launcher_revamped_marker
+A file or folder, such as
+.BR .git ,
+that every app without its own marker looks for: the app starts in the
+nearest folder above the pane's that holds it.
+.TP
+.B @launcher_revamped_max_depth
+How many folders the marker search climbs. The default is
+.BR 20 .
+.TP
+.B @launcher_revamped_skip_missing
+.B on
+binds no key for an app whose command is not installed; an app with a host
+is not checked. The default is
+.BR off .
+.TP
+.BI @launcher_revamped_ id _key
+The app's own prefix key. Unbound until set.
+.TP
+.BI @launcher_revamped_ id _command
+What the app runs. The default is the ID.
+.TP
+.BI @launcher_revamped_ id _mode
+.BR popup ,
+.B window
+or
+.BR split .
+The default is
+.BR popup ,
+and
+.B window
+for yazi. A popup needs tmux 3.2; an older tmux opens a window.
+.TP
+.BI @launcher_revamped_ id _name
+The window name and the menu label. The default is the ID.
+.TP
+.BR @launcher_revamped_ \fIid\fR _width ", " @launcher_revamped_ \fIid\fR _height
+The popup size. The default is
+.BR 80% .
+.TP
+.BI @launcher_revamped_ id _marker
+The app's own project marker.
+.TP
+.BI @launcher_revamped_ id _if
+A shell check run first; a non-zero exit keeps the app closed.
+.TP
+.BI @launcher_revamped_ id _prompt
+A prompt shown before the launch; each typed word becomes a quoted argument.
+.TP
+.BI @launcher_revamped_ id _group
+App IDs opened in one new window, tiled.
+.TP
+.BI @launcher_revamped_ id _host
+A host the app runs on, through
+.BR "ssh \-t" .
+.TP
+.BI @launcher_revamped_ id _reuse
+.B on
+selects the app's window when one with its name is open, in window mode.
+.TP
+.BI @launcher_revamped_ id _env
+Variables set before the command with
+.BR env ,
+such as
+.BR A=1 .
+.TP
+.BI @launcher_revamped_ id _pre
+A command that must succeed before the app starts.
+.TP
+.BI @launcher_revamped_ id _exit
+A command run after the app exits.
+.TP
+.B @revamped_theme
+The theme of every tmux-revamped tool, when nothing else sets one. The default
+is
+.BR kodougu .
+.SH EXIT STATUS
+0 on success, 1 on any failure.
+.SH SEE ALSO
+.BR tmux (1),
+.BR fzf (1),
+.BR gum (1)

@@ -1,5 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
-CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-bash "${CURRENT_DIR}/src/launcher.sh"
+launcher_revamped_dir=$(cd "$(dirname "$0")" && pwd)
+"${launcher_revamped_dir}/bin/launcher-revamped" apply

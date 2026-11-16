@@ -2,66 +2,62 @@
 
 # tmux-launcher-revamped
 
-<strong>Launch any TUI app in a popup or a window, scoped to the current pane's directory, with one configurable binding per app.</strong>
+<strong>Open any terminal app in a tmux popup, window or split from one menu, starting at the project root.</strong>
 
-English | [日本語](README.ja.md) | [简体中文](README.zh-Hans.md) | [繁體中文（香港）](README.zh-HK.md)
+English &nbsp;|&nbsp; [日本語](README.ja.md) &nbsp;|&nbsp; [简体中文](README.zh-Hans.md) &nbsp;|&nbsp; [繁體中文（香港）](README.zh-HK.md)
 
-[![family](https://img.shields.io/github/actions/workflow/status/tmux-revamped/tmux-launcher-revamped/family.yml?branch=main&style=flat-square&label=family)](https://github.com/tmux-revamped/tmux-launcher-revamped/actions/workflows/family.yml)
-[![tests](https://img.shields.io/github/actions/workflow/status/tmux-revamped/tmux-launcher-revamped/tests.yml?branch=main&style=flat-square&label=tests)](https://github.com/tmux-revamped/tmux-launcher-revamped/actions/workflows/tests.yml)
+[![ci](https://img.shields.io/github/actions/workflow/status/tmux-revamped/tmux-launcher-revamped/ci.yml?branch=main&style=flat-square&label=ci)](https://github.com/tmux-revamped/tmux-launcher-revamped/actions/workflows/ci.yml)
 [![release](https://img.shields.io/github/v/release/tmux-revamped/tmux-launcher-revamped?style=flat-square&label=release)](https://github.com/tmux-revamped/tmux-launcher-revamped/releases/latest)
 [![openssf scorecard](https://img.shields.io/ossf-scorecard/github.com/tmux-revamped/tmux-launcher-revamped?style=flat-square&label=openssf%20scorecard)](https://scorecard.dev/viewer/?uri=github.com/tmux-revamped/tmux-launcher-revamped)
 [![license](https://img.shields.io/github/license/tmux-revamped/tmux-launcher-revamped?style=flat-square&label=license)](LICENSE)
 
 <p align="center">
-  <a href="#what-it-does">What it does</a> |
-  <a href="#installation">Installation</a> |
-  <a href="#usage">Usage</a> |
-  <a href="#configuration">Configuration</a> |
-  <a href="#key-bindings">Key bindings</a> |
-  <a href="#how-it-works">How it works</a>
+  <a href="#quick-start"><strong>Quick start</strong></a> &nbsp;|&nbsp;
+  <a href="#usage">Usage</a> &nbsp;|&nbsp;
+  <a href="#apps">Apps</a> &nbsp;|&nbsp;
+  <a href="#screens">Screens</a>
 </p>
 
 </div>
 
-**21** options, **3** launch modes, **1** key bound by default, tmux **3.2** or later.
+<p align="center">
+  <img src="screens/hero.gif" alt="prefix M-a opens the launcher menu and lazygit opens in a popup at the project root" width="800">
+</p>
+
+```console
+$ launcher-revamped doctor
+tmux               ok       /usr/bin/tmux, 3.6
+awk                ok       /usr/bin/awk, mawk 1.3.4
+sed                ok       /usr/bin/sed, gnu 4.9
+tr                 ok       /usr/bin/tr, uutils 0.10.0
+fzf                warn     the picker needs it: brew install fzf, or apt install fzf
+lazygit            warn     lazygit is not installed
+yazi               warn     yazi is not installed
+```
+
+You list the apps you use, such as lazygit, yazi, htop or k9s. `prefix M-a` opens a menu of all of them, and any app can have a key of its own. Each one opens in a popup, a window or a split, in the pane's folder or at the project root above it.
 
 ---
 
-## What it does
+## Quick start
 
-You list the terminal apps you use, such as `lazygit`, `yazi`, `htop` or `k9s`. Each one opens in a popup, a new window or a split, and starts in the current pane's directory.
+### Prerequisites
 
-| Capability | Option |
-|:-----------|:-------|
-| Open every listed app from one menu | `@launcher_menu_key` |
-| Give an app its own key | `@launcher_<id>_key` |
-| Pick popup, window or split per app | `@launcher_<id>_mode` |
-| Start at the project root instead of the pane directory | `@launcher_<id>_marker`, `@launcher_marker` |
-| Skip the launch when a check fails | `@launcher_<id>_if` |
-| Ask for arguments before launching | `@launcher_<id>_prompt` |
-| Open several apps as one tiled window | `@launcher_<id>_group` |
-| Run the app on another host over `ssh -t` | `@launcher_<id>_host` |
-| Choose an app with fzf | `@launcher_picker_key` |
+| Tool | Version | Used for |
+|:-----|:--------|:---------|
+| tmux | 3.2 or later | the family floor; a popup app opens as a window on an older tmux |
+| fzf | any | the app picker, only when `@launcher_revamped_picker_key` is set |
+| gum | optional | the menu, tables and colours of `launcher-revamped`; without it every command prints plain text |
 
-## Requirements
+The apps themselves must be installed; the plugin runs whatever command you give it.
 
-| Requirement | Version |
-|:------------|:--------|
-| tmux | 3.2 or later |
-| bash | 3.2 or later |
-| fzf | any, only for `@launcher_picker_key` |
-
-It runs on Linux and macOS with BSD, GNU or uutils coreutils. The apps you launch must be installed; the plugin runs whatever command you give it.
-
-## Installation
-
-With [TPM](https://github.com/tmux-plugins/tpm), add the plugin to `~/.tmux.conf` and press `prefix + I`:
+### Install
 
 ```tmux
 set -g @plugin 'tmux-revamped/tmux-launcher-revamped'
 ```
 
-To install by hand, clone the repository and run the entrypoint from `~/.tmux.conf`:
+Then press `prefix + I`. Without TPM, clone the repository and run its entry point from `~/.tmux.conf`:
 
 ```bash
 git clone https://github.com/tmux-revamped/tmux-launcher-revamped ~/.tmux/plugins/tmux-launcher-revamped
@@ -71,125 +67,164 @@ git clone https://github.com/tmux-revamped/tmux-launcher-revamped ~/.tmux/plugin
 run-shell ~/.tmux/plugins/tmux-launcher-revamped/launcher-revamped.tmux
 ```
 
+`make install` in the clone also puts `launcher-revamped` in `~/.local/bin`, with its man page and completions under `~/.local/share`.
+
+### Verify
+
+```bash
+~/.tmux/plugins/tmux-launcher-revamped/bin/launcher-revamped doctor
+```
+
 ## Usage
 
-Press `prefix + M-a`. A menu lists every app in `@launcher_apps`, which defaults to `lazygit` in a popup and `yazi` in a window.
-
-Add your own apps and give the ones you use most a direct key:
-
-```tmux
-set -g @launcher_apps 'lazygit yazi lazydocker htop k9s'
-
-set -g @launcher_lazygit_key 'C-g'
-set -g @launcher_yazi_key 'C-y'
-set -g @launcher_htop_key 'C-t'
-set -g @launcher_htop_mode 'split'
-```
-
-More launch options:
-
-```tmux
-set -g @launcher_lazygit_if 'git -C "$LAUNCHER_PATH" rev-parse 2>/dev/null'
-set -g @launcher_lazygit_marker '.git'
-set -g @launcher_lazygit_exit 'tmux refresh-client -S'
-
-set -g @launcher_man_key 'C-m'
-set -g @launcher_man_prompt 'man:'
-
-set -g @launcher_dash_key 'C-d'
-set -g @launcher_dash_group 'lazygit htop'
-
-set -g @launcher_k9s_key 'C-s'
-set -g @launcher_k9s_host 'box.example'
-
-set -g @launcher_picker_key 'C-p'
-set -g @launcher_skip_missing 'on'
-```
-
-File managers that show image previews, such as `yazi`, `lf` and `ranger`, work better in `window` mode. tmux popups do not pass image escape sequences through ([tmux#4329](https://github.com/tmux/tmux/issues/4329)).
-
-## Configuration
-
-`@launcher_apps` is a space-separated list of app ids. Each id reads the per-app options below.
-
-### Global options
-
-| Option | Default | Meaning |
-|:-------|:--------|:--------|
-| `@launcher_apps` | `lazygit yazi` | App ids shown in the menu and checked for a direct key |
-| `@launcher_menu_key` | `M-a` | Prefix key that opens a `display-menu` of every app; `off` unbinds it |
-| `@launcher_picker_key` | none | Prefix key that opens an fzf app picker in a popup |
-| `@launcher_marker` | none | Marker file or directory used by every app without its own marker |
-| `@launcher_max_depth` | `20` | Number of parent directories the marker search climbs |
-| `@launcher_skip_missing` | off | `on` binds no direct key for an app whose command is not on `PATH`; apps with a host are not checked |
-
-### Per-app options
-
-| Option | Default | Meaning |
-|:-------|:--------|:--------|
-| `@launcher_<id>_key` | none | Prefix key for this app; no key is bound until you set one |
-| `@launcher_<id>_command` | the id | Shell command to run |
-| `@launcher_<id>_mode` | `popup`, `window` for `yazi` | `popup`, `window` or `split` |
-| `@launcher_<id>_name` | the id | Window name in `window` mode and label in the menu |
-| `@launcher_<id>_width` | `80%` | Popup width |
-| `@launcher_<id>_height` | `80%` | Popup height |
-| `@launcher_<id>_marker` | none | Walk up from the pane directory to the one holding this marker, such as `.git`; falls back to the pane directory |
-| `@launcher_<id>_if` | none | Shell predicate run before launch; a non-zero exit cancels it. `LAUNCHER_PATH` holds the start directory |
-| `@launcher_<id>_prompt` | none | Prompt text; each typed word is appended to the command as a quoted argument |
-| `@launcher_<id>_group` | none | Space-separated app ids opened in one new window and tiled |
-| `@launcher_<id>_host` | none | Remote host; the composed command runs under `ssh -t` |
-| `@launcher_<id>_reuse` | off | `on` in `window` mode selects a window with the same name instead of opening another |
-| `@launcher_<id>_env` | none | Variables placed before the command with `env`, such as `FOO=bar` |
-| `@launcher_<id>_pre` | none | Command run first; the app starts only if it succeeds |
-| `@launcher_<id>_exit` | none | Command run after the app exits |
-
-### Internal state
-
-The plugin writes these options itself. Do not set them.
-
-| Option | Holds |
-|:-------|:------|
-| `@launcher_prompt_value` | The text typed at an app's prompt, read once by the launch |
-| `@launcher_picked` | The app chosen in the fzf picker, cleared when it launches |
-
-## Key bindings
-
-| Key | Action | Default |
-|:----|:-------|:--------|
-| `prefix + M-a` | Menu of every app in `@launcher_apps` | Bound |
-| `@launcher_<id>_key` | Launch that app | Unbound |
-| `@launcher_picker_key` | fzf app picker | Unbound |
-
-Version 2.0.0 removed the old direct keys. To restore them:
-
-```tmux
-set -g @launcher_lazygit_key 'C-g'
-set -g @launcher_yazi_key 'C-y'
-```
-
-## How it works
-
-[`launcher-revamped.tmux`](launcher-revamped.tmux) runs [`src/launcher.sh`](src/launcher.sh) once when tmux loads the plugin. That script reads the options and binds the menu, the picker and each app key. Every binding calls the same script back with `dispatch <id>` through `run-shell -b`, so the work happens when you press the key.
-
-At launch, `dispatch` resolves the start directory, runs the `_if` predicate, and builds the command in this order: `pre &&`, `env` variables, the command and its prompt arguments, then `; exit`. A host wraps the whole result in `ssh -t`. The mode decides between `display-popup -E`, `new-window` and `split-window`. On tmux older than 3.2, which has no `display-popup`, a popup app opens as a window.
-
-The fzf picker runs inside `display-popup -E`, stores the chosen id in `@launcher_picked`, and launches it after the popup closes. A popup app can then open its own popup.
-
-The pure helpers live in [`src/lib/launcher/launcher.sh`](src/lib/launcher/launcher.sh). Setting `LAUNCHER_DRY_RUN` makes the script print each tmux call instead of running it, which is how the test suite checks the bindings.
-
-## Development
+Press `prefix M-a`. The menu lists every app in `@launcher_revamped_apps`, which defaults to lazygit in a popup and yazi in a window. A menu key you bound before the plugin loaded stays yours, and `doctor` says so.
 
 | Command | What it does |
 |:--------|:-------------|
-| `make test` | Runs the bats suite |
-| `make lint` | Runs shellcheck on every shell file |
-| `make coverage` | Measures line coverage with kcov on Linux and fails below 95% |
+| `launcher-revamped apply` | Binds every key now; the entry point runs it when tmux loads the plugin |
+| `launcher-revamped list` | Prints every binding apply would make; `--json` prints one object |
+| `launcher-revamped launch ID [ARG...]` | Opens the app `ID`; each word after it becomes one quoted argument |
+| `launcher-revamped pick` | Chooses an app with fzf and records it for `launch-picked` |
+| `launcher-revamped launch-picked` | Opens the app `pick` recorded |
+| `launcher-revamped doctor` | One row per dependency, one per app, and the menu key when you had bound it first |
+| `launcher-revamped version` | The version, then the tmux version |
+| `launcher-revamped help` | The help page; `man launcher-revamped` documents the same commands and settings |
+| `launcher-revamped` | On a terminal, a menu |
 
-Changes are listed in [CHANGELOG.md](CHANGELOG.md).
+| tmux option | Default | Meaning |
+|:------------|:--------|:--------|
+| `@launcher_revamped_apps` | `lazygit yazi` | The app IDs the menu lists |
+| `@launcher_revamped_menu_key` | `M-a` | The prefix key for the menu; `none` binds no menu |
+| `@launcher_revamped_picker_key` | none | The prefix key for the fzf app picker |
+| `@launcher_revamped_marker` | none | A file or folder, such as `.git`, that marks the project root for every app without its own |
+| `@launcher_revamped_max_depth` | `20` | How many folders the marker search climbs |
+| `@launcher_revamped_skip_missing` | `off` | `on` binds no key for an app whose command is not installed; an app with a host is not checked |
+
+Every option is also a command option with dashes, such as `--menu-key M-o`, and an environment variable, such as `LAUNCHER_REVAMPED_MENU_KEY`; the command line wins over the environment, and the environment over the tmux option. An empty tmux option means its default.
+
+The options were named `@launcher_*` before 3.0.0, and those names no longer work. The menu key's off value is now `none`, where it was `off`.
+
+<a id="apps"></a>
+
+## Apps
+
+Each ID in `@launcher_revamped_apps` reads its own options, `@launcher_revamped_<id>_<field>`:
+
+```tmux
+set -g @launcher_revamped_apps 'lazygit yazi htop k9s man dash'
+
+set -g @launcher_revamped_lazygit_key 'C-g'
+set -g @launcher_revamped_lazygit_marker '.git'
+set -g @launcher_revamped_lazygit_if 'git -C "$LAUNCHER_PATH" rev-parse 2>/dev/null'
+
+set -g @launcher_revamped_htop_mode 'split'
+set -g @launcher_revamped_k9s_host 'box.example'
+set -g @launcher_revamped_man_prompt 'man:'
+set -g @launcher_revamped_dash_group 'lazygit htop'
+```
+
+| Field | Default | Meaning |
+|:------|:--------|:--------|
+| `_key` | none | The app's own prefix key |
+| `_command` | the ID | What it runs |
+| `_mode` | `popup`, `window` for yazi | `popup`, `window` or `split`; a popup needs tmux 3.2 |
+| `_name` | the ID | The window name and the menu label |
+| `_width`, `_height` | `80%` | The popup size |
+| `_marker` | none | Its own project marker |
+| `_if` | none | A shell check run first; a non-zero exit keeps the app closed, and `LAUNCHER_PATH` holds the folder it would start in |
+| `_prompt` | none | A prompt shown first; each typed word becomes a quoted argument |
+| `_group` | none | App IDs opened in one new window, tiled |
+| `_host` | none | A host it runs on through `ssh -t` |
+| `_reuse` | `off` | `on` selects its window when one with its name is open |
+| `_env` | none | Variables set before the command, such as `A=1` |
+| `_pre` | none | A command that must succeed first |
+| `_exit` | none | A command run after it exits |
+
+File managers with image previews, such as yazi, lf and ranger, work better in `window` mode: tmux popups do not pass image escape sequences through.
+
+The command is built as `pre && env VARS command ARGS; exit`, and a host wraps all of it in `ssh -t`. The picker runs inside a popup and records the chosen ID in `@launcher_revamped_picked`; `launch-picked` opens it after the popup closes, so a popup app can open its own popup.
+
+<a id="screens"></a>
+
+## Screens
+
+<details>
+<summary>Every screen, recorded inside a real tmux with <code>make screens</code>, with each key on the status line</summary>
+<br>
+
+<table>
+<tr>
+<td width="50%" valign="top"><img src="screens/menu.png" alt="launcher-revamped: The menu of every app on prefix M-a"><br><sub>The menu of every app on prefix M-a, from <code>apps.tape</code></sub></td>
+<td width="50%" valign="top"><img src="screens/popup.png" alt="launcher-revamped: lazygit in a popup at the project root"><br><sub>lazygit in a popup at the project root, from <code>apps.tape</code></sub></td>
+</tr>
+<tr>
+<td width="50%" valign="top"><img src="screens/window.png" alt="launcher-revamped: tig in a window of its own"><br><sub>tig in a window of its own, from <code>apps.tape</code></sub></td>
+<td width="50%" valign="top"><img src="screens/split.png" alt="launcher-revamped: A split beside the work"><br><sub>A split beside the work, from <code>apps.tape</code></sub></td>
+</tr>
+<tr>
+<td width="50%" valign="top"><img src="screens/prompt.png" alt="launcher-revamped: A prompt whose words become arguments"><br><sub>A prompt whose words become arguments, from <code>apps.tape</code></sub></td>
+<td width="50%" valign="top"><img src="screens/picker.png" alt="launcher-revamped: The fzf app picker"><br><sub>The fzf app picker, from <code>apps.tape</code></sub></td>
+</tr>
+<tr>
+<td width="50%" valign="top"><img src="screens/group.png" alt="launcher-revamped: A group of apps tiled in one window"><br><sub>A group of apps tiled in one window, from <code>apps.tape</code></sub></td>
+<td width="50%" valign="top"><img src="screens/list.png" alt="launcher-revamped: list"><br><sub><code>list</code>, from <code>stills.tape</code></sub></td>
+</tr>
+<tr>
+<td width="50%" valign="top"><img src="screens/json.png" alt="launcher-revamped: list --json"><br><sub><code>list --json</code>, from <code>stills.tape</code></sub></td>
+<td width="50%" valign="top"><img src="screens/doctor.png" alt="launcher-revamped: doctor"><br><sub><code>doctor</code>, from <code>stills.tape</code></sub></td>
+</tr>
+<tr>
+<td width="50%" valign="top"><img src="screens/plain-menu.png" alt="launcher-revamped: The menu without gum"><br><sub>The menu without gum, from <code>stills.tape</code></sub></td>
+<td width="50%" valign="top"><img src="screens/plain-apply.png" alt="launcher-revamped: apply from the menu"><br><sub><code>apply</code> from the menu, from <code>stills.tape</code></sub></td>
+</tr>
+<tr>
+<td width="50%" valign="top"><img src="screens/version.png" alt="launcher-revamped: The version"><br><sub>The version, from <code>stills.tape</code></sub></td>
+<td width="50%" valign="top"><img src="screens/error.png" alt="launcher-revamped: An unknown command"><br><sub>An unknown command, from <code>stills.tape</code></sub></td>
+</tr>
+<tr>
+<td width="50%" valign="top"><img src="screens/themes.png" alt="launcher-revamped: The header in six themes"><br><sub>The header in six themes, from <code>themes.tape</code></sub></td>
+<td width="50%" valign="top"><img src="screens/help.png" alt="launcher-revamped: The help page"><br><sub>The help page, from <code>help.tape</code></sub></td>
+</tr>
+<tr>
+<td width="50%" valign="top"><img src="screens/accent.png" alt="launcher-revamped: An accent from LAUNCHER_REVAMPED_ACCENT"><br><sub>An accent from <code>LAUNCHER_REVAMPED_ACCENT</code>, from <code>stills.tape</code></sub></td>
+<td width="50%" valign="top"></td>
+</tr>
+</table>
+
+</details>
+
+## Portability
+
+The plugin is POSIX `sh`. CI runs every suite on each row below.
+
+| Shell | Status |
+|:------|:-------|
+| `dash`, `/bin/sh` on macOS | Supported |
+| `bash` 3.2 and 5.x, the system's `zsh` and Homebrew's | Supported |
+
+| System | Status |
+|:-------|:-------|
+| macOS | Tahoe on Apple Silicon and Intel, with the tools it ships, Homebrew's GNU tools and Homebrew's uutils |
+| Linux | Ubuntu 26.04 on x86_64 and arm64, with GNU coreutils, uutils and BusyBox |
+
+## Development
+
+| Command | What it runs |
+|:--------|:-------------|
+| `make fmt` | shfmt `-i 2` on every script |
+| `make lint` | shfmt, ShellCheck, mandoc, yamllint and actionlint, at zero findings |
+| `make test` | The bats suites under the system `sh` |
+| `make test-all` | The suites under every installed shell, both builds of bash and zsh on macOS |
+| `make test-linux` | The suites in an Ubuntu container |
+| `make coverage` | bashcov on this Mac and in the Ubuntu container, merged and gated at 100 percent |
+| `make screens` | The screens above, recorded from the real plugin inside tmux with VHS, on macOS |
+| `make install` | The command, its man page and completions under `PREFIX` |
+
+Commits follow the conventional commit format and go straight to `main`. After a green `ci` run on `main`, `release.yml` runs semantic-release: every `feat` or `fix` since the last tag publishes a release, stamps the version constant and adds the notes to [`CHANGELOG.md`](CHANGELOG.md).
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE), copyright Gustavo Franco.
 
 <!-- family:begin -->
 
@@ -211,7 +246,7 @@ A defect found in one member is hunted across all of them before the fix is call
 | [`tmux-git-revamped`](https://github.com/tmux-revamped/tmux-git-revamped) | Show the active pane's git branch, changes and provider counts in the tmux status bar without blocking it |
 | [`tmux-gpu-revamped`](https://github.com/tmux-revamped/tmux-gpu-revamped) | GPU load, temperature, clock, power and memory in the tmux status bar, from NVIDIA, AMD, Intel and Apple GPUs |
 | [`tmux-kube-revamped`](https://github.com/tmux-revamped/tmux-kube-revamped) | Current Kubernetes context and namespace in the tmux status bar, parsed from kubeconfig without kubectl |
-| [`tmux-launcher-revamped`](https://github.com/tmux-revamped/tmux-launcher-revamped) | **this plugin**, Launch any TUI app in a popup or a window, scoped to the current pane's directory, with one configurable bindi |
+| [`tmux-launcher-revamped`](https://github.com/tmux-revamped/tmux-launcher-revamped) | **this plugin**, Open any terminal app in a tmux popup, window or split from one menu, starting at the project root |
 | [`tmux-logging-revamped`](https://github.com/tmux-revamped/tmux-logging-revamped) | Capture any pane to a file: live logging, full scrollback, or a one-shot screenshot |
 | [`tmux-music-revamped`](https://github.com/tmux-revamped/tmux-music-revamped) | Now playing in your tmux status bar, without ever blocking the status render |
 | [`tmux-network-revamped`](https://github.com/tmux-revamped/tmux-network-revamped) | Network throughput in your tmux status bar, without ever blocking the render |

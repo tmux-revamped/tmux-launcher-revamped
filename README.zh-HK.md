@@ -2,72 +2,62 @@
 
 # tmux-launcher-revamped
 
-<strong>在彈出視窗或新視窗中啟動任何 TUI 應用程式，從目前窗格的目錄開始，每個應用程式可設定一個按鍵。</strong>
+<strong>從一個選單在 tmux 的彈出視窗、視窗或分割窗格中開啟 lazygit、yazi 等終端應用程式，從項目根目錄開始。</strong>
 
-[English](README.md) | [日本語](README.ja.md) | [简体中文](README.zh-Hans.md) | 繁體中文（香港）
+[English](README.md) &nbsp;|&nbsp; [日本語](README.ja.md) &nbsp;|&nbsp; [简体中文](README.zh-Hans.md) &nbsp;|&nbsp; 繁體中文（香港）
 
-[![family](https://img.shields.io/github/actions/workflow/status/tmux-revamped/tmux-launcher-revamped/family.yml?branch=main&style=flat-square&label=family)](https://github.com/tmux-revamped/tmux-launcher-revamped/actions/workflows/family.yml)
-[![tests](https://img.shields.io/github/actions/workflow/status/tmux-revamped/tmux-launcher-revamped/tests.yml?branch=main&style=flat-square&label=tests)](https://github.com/tmux-revamped/tmux-launcher-revamped/actions/workflows/tests.yml)
+[![ci](https://img.shields.io/github/actions/workflow/status/tmux-revamped/tmux-launcher-revamped/ci.yml?branch=main&style=flat-square&label=ci)](https://github.com/tmux-revamped/tmux-launcher-revamped/actions/workflows/ci.yml)
 [![release](https://img.shields.io/github/v/release/tmux-revamped/tmux-launcher-revamped?style=flat-square&label=release)](https://github.com/tmux-revamped/tmux-launcher-revamped/releases/latest)
 [![openssf scorecard](https://img.shields.io/ossf-scorecard/github.com/tmux-revamped/tmux-launcher-revamped?style=flat-square&label=openssf%20scorecard)](https://scorecard.dev/viewer/?uri=github.com/tmux-revamped/tmux-launcher-revamped)
 [![license](https://img.shields.io/github/license/tmux-revamped/tmux-launcher-revamped?style=flat-square&label=license)](LICENSE)
 
 <p align="center">
-  <a href="#what-it-does">功能</a> |
-  <a href="#installation">安裝</a> |
-  <a href="#usage">用法</a> |
-  <a href="#configuration">設定</a> |
-  <a href="#key-bindings">按鍵綁定</a> |
-  <a href="#how-it-works">運作原理</a>
+  <a href="#快速開始"><strong>快速開始</strong></a> &nbsp;|&nbsp;
+  <a href="#用法">用法</a> &nbsp;|&nbsp;
+  <a href="#應用程式">應用程式</a> &nbsp;|&nbsp;
+  <a href="#畫面">畫面</a>
 </p>
 
 </div>
 
-**21** 個選項，**3** 種啟動模式，預設只綁定 **1** 個按鍵，支援 tmux **3.2** 或以上版本。
+<p align="center">
+  <img src="screens/hero.gif" alt="prefix M-a 開啟啟動器選單，lazygit 在項目根目錄以彈出視窗開啟" width="800">
+</p>
+
+```console
+$ launcher-revamped doctor
+tmux               ok       /usr/bin/tmux, 3.6
+awk                ok       /usr/bin/awk, mawk 1.3.4
+sed                ok       /usr/bin/sed, gnu 4.9
+tr                 ok       /usr/bin/tr, uutils 0.10.0
+fzf                warn     the picker needs it: brew install fzf, or apt install fzf
+lazygit            warn     lazygit is not installed
+yazi               warn     yazi is not installed
+```
+
+列出你使用的應用程式，例如 lazygit、yazi、htop 或 k9s。`prefix M-a` 開啟包含全部應用程式的選單，每個應用程式亦可有自己的按鍵。每個應用程式在彈出視窗、視窗或分割窗格中開啟，位置是窗格所在的資料夾，或其上方的項目根目錄。
 
 ---
 
-<a id="what-it-does"></a>
+## 快速開始
 
-## 功能
+### 前提條件
 
-將你常用的終端機應用程式列出來，例如 `lazygit`、`yazi`、`htop` 或 `k9s`。每個應用程式會在彈出視窗、新視窗或分割窗格中開啟，並從目前窗格的目錄開始。
+| 工具 | 版本 | 用途 |
+|:-----|:--------|:---------|
+| tmux | 3.2 或以上 | 系列的最低版本；較舊的版本中彈出視窗應用程式會以視窗開啟 |
+| fzf | 任何 | 應用程式選擇器，只在設定了 `@launcher_revamped_picker_key` 時使用 |
+| gum | 可選 | `launcher-revamped` 的選單、表格和顏色；沒有它，所有命令都輸出純文字 |
 
-| 功能 | 選項 |
-|:-----|:-----|
-| 從一個選單開啟所有已列出的應用程式 | `@launcher_menu_key` |
-| 為應用程式指定專用按鍵 | `@launcher_<id>_key` |
-| 為每個應用程式選擇彈出視窗、視窗或分割窗格 | `@launcher_<id>_mode` |
-| 從專案根目錄而不是窗格目錄開始 | `@launcher_<id>_marker`、`@launcher_marker` |
-| 檢查失敗時不啟動 | `@launcher_<id>_if` |
-| 啟動前輸入參數 | `@launcher_<id>_prompt` |
-| 在一個平鋪視窗中同時開啟多個應用程式 | `@launcher_<id>_group` |
-| 透過 `ssh -t` 在另一部主機上執行應用程式 | `@launcher_<id>_host` |
-| 用 fzf 選擇應用程式 | `@launcher_picker_key` |
+應用程式本身必須已安裝；插件會直接執行你提供的命令。
 
-<a id="requirements"></a>
-
-## 系統要求
-
-| 要求 | 版本 |
-|:-----|:-----|
-| tmux | 3.2 或以上 |
-| bash | 3.2 或以上 |
-| fzf | 任何版本，只有 `@launcher_picker_key` 需要 |
-
-可在 Linux 和 macOS 上執行，支援 BSD、GNU 或 uutils coreutils。要啟動的應用程式須自行安裝，插件只會執行你指定的指令。
-
-<a id="installation"></a>
-
-## 安裝
-
-使用 [TPM](https://github.com/tmux-plugins/tpm) 時，將插件加入 `~/.tmux.conf`，然後按 `prefix + I`：
+### 安裝
 
 ```tmux
 set -g @plugin 'tmux-revamped/tmux-launcher-revamped'
 ```
 
-手動安裝時，複製儲存庫，並在 `~/.tmux.conf` 中執行入口腳本：
+然後按 `prefix + I`。不使用 TPM 時，複製儲存庫，並在 `~/.tmux.conf` 中執行它的入口腳本：
 
 ```bash
 git clone https://github.com/tmux-revamped/tmux-launcher-revamped ~/.tmux/plugins/tmux-launcher-revamped
@@ -77,137 +67,164 @@ git clone https://github.com/tmux-revamped/tmux-launcher-revamped ~/.tmux/plugin
 run-shell ~/.tmux/plugins/tmux-launcher-revamped/launcher-revamped.tmux
 ```
 
-<a id="usage"></a>
+在複製的目錄中執行 `make install`，亦會把 `launcher-revamped` 放入 `~/.local/bin`，並把它的 man 手冊和自動完成放在 `~/.local/share` 下。
+
+### 驗證
+
+```bash
+~/.tmux/plugins/tmux-launcher-revamped/bin/launcher-revamped doctor
+```
 
 ## 用法
 
-按 `prefix + M-a`，選單會列出 `@launcher_apps` 中的所有應用程式。預設是在彈出視窗中開啟的 `lazygit` 和在視窗中開啟的 `yazi`。
+按 `prefix M-a`。選單列出 `@launcher_revamped_apps` 中的每個應用程式，預設是在彈出視窗中開啟的 lazygit 和在視窗中開啟的 yazi。插件載入前你自己綁定的選單按鍵會保留，`doctor` 會說明這一點。
 
-加入你自己的應用程式，並為最常用的應用程式指定專用按鍵：
+| 命令 | 作用 |
+|:--------|:-------------|
+| `launcher-revamped apply` | 立即綁定所有按鍵；插件載入時入口點會執行它 |
+| `launcher-revamped list` | 列出 apply 會做的每個綁定；`--json` 輸出一個物件 |
+| `launcher-revamped launch ID [ARG...]` | 開啟應用程式 `ID`；後面的每個詞成為一個加引號的參數 |
+| `launcher-revamped pick` | 用 fzf 選擇一個應用程式，並為 `launch-picked` 記錄下來 |
+| `launcher-revamped launch-picked` | 開啟 `pick` 記錄的應用程式 |
+| `launcher-revamped doctor` | 每個依賴一行、每個應用程式一行，以及你事先綁定的選單按鍵 |
+| `launcher-revamped version` | 版本，然後是 tmux 版本 |
+| `launcher-revamped help` | 說明頁；`man launcher-revamped` 記錄相同的命令和設定 |
+| `launcher-revamped` | 在終端機上顯示選單 |
 
-```tmux
-set -g @launcher_apps 'lazygit yazi lazydocker htop k9s'
+| tmux 選項 | 預設值 | 含義 |
+|:------------|:--------|:--------|
+| `@launcher_revamped_apps` | `lazygit yazi` | 選單列出的應用程式 ID |
+| `@launcher_revamped_menu_key` | `M-a` | 選單的 prefix 按鍵；`none` 表示不綁定選單 |
+| `@launcher_revamped_picker_key` | 無 | fzf 應用程式選擇器的 prefix 按鍵 |
+| `@launcher_revamped_marker` | 無 | 標示項目根目錄的檔案或資料夾，例如 `.git`，用於沒有自己標記的應用程式 |
+| `@launcher_revamped_max_depth` | `20` | 標記搜尋向上查找的資料夾層數 |
+| `@launcher_revamped_skip_missing` | `off` | `on` 時不為命令未安裝的應用程式綁定按鍵；有主機的應用程式不檢查 |
 
-set -g @launcher_lazygit_key 'C-g'
-set -g @launcher_yazi_key 'C-y'
-set -g @launcher_htop_key 'C-t'
-set -g @launcher_htop_mode 'split'
-```
+每個選項亦可寫成以短橫線連接的命令選項，例如 `--menu-key M-o`，以及環境變數，例如 `LAUNCHER_REVAMPED_MENU_KEY`；命令列優先於環境變數，環境變數優先於 tmux 選項。空的 tmux 選項表示使用預設值。
 
-更多啟動選項：
+3.0.0 之前這些選項名為 `@launcher_*`，舊名稱已不再生效。選單按鍵的關閉值由 `off` 改為 `none`。
 
-```tmux
-set -g @launcher_lazygit_if 'git -C "$LAUNCHER_PATH" rev-parse 2>/dev/null'
-set -g @launcher_lazygit_marker '.git'
-set -g @launcher_lazygit_exit 'tmux refresh-client -S'
+<a id="應用程式"></a>
 
-set -g @launcher_man_key 'C-m'
-set -g @launcher_man_prompt 'man:'
+## 應用程式
 
-set -g @launcher_dash_key 'C-d'
-set -g @launcher_dash_group 'lazygit htop'
-
-set -g @launcher_k9s_key 'C-s'
-set -g @launcher_k9s_host 'box.example'
-
-set -g @launcher_picker_key 'C-p'
-set -g @launcher_skip_missing 'on'
-```
-
-`yazi`、`lf`、`ranger` 等會顯示圖片預覽的檔案管理工具較適合使用 `window` 模式，因為 tmux 彈出視窗不會轉送圖片的轉義序列（[tmux#4329](https://github.com/tmux/tmux/issues/4329)）。
-
-<a id="configuration"></a>
-
-## 設定
-
-`@launcher_apps` 是以空格分隔的應用程式 ID 清單。每個 ID 讀取下列的應用程式選項。
-
-### 整體選項
-
-| 選項 | 預設值 | 意思 |
-|:-----|:-------|:-----|
-| `@launcher_apps` | `lazygit yazi` | 在選單中顯示並檢查專用按鍵的應用程式 ID |
-| `@launcher_menu_key` | `M-a` | 開啟所有應用程式 `display-menu` 的 prefix 按鍵；設為 `off` 即取消綁定 |
-| `@launcher_picker_key` | 無 | 在彈出視窗中開啟 fzf 應用程式選擇器的 prefix 按鍵 |
-| `@launcher_marker` | 無 | 沒有自己標記的應用程式所用的標記檔案或目錄 |
-| `@launcher_max_depth` | `20` | 尋找標記時向上搜尋的上層目錄數目 |
-| `@launcher_skip_missing` | off | 設為 `on` 時，指令不在 `PATH` 中的應用程式不會綁定專用按鍵；設定了主機的應用程式不作檢查 |
-
-### 應用程式選項
-
-| 選項 | 預設值 | 意思 |
-|:-----|:-------|:-----|
-| `@launcher_<id>_key` | 無 | 該應用程式的 prefix 按鍵；設定之前不會綁定任何按鍵 |
-| `@launcher_<id>_command` | 與 ID 相同 | 要執行的 shell 指令 |
-| `@launcher_<id>_mode` | `popup`，`yazi` 為 `window` | `popup`、`window` 或 `split` |
-| `@launcher_<id>_name` | 與 ID 相同 | `window` 模式下的視窗名稱，以及選單中的標籤 |
-| `@launcher_<id>_width` | `80%` | 彈出視窗闊度 |
-| `@launcher_<id>_height` | `80%` | 彈出視窗高度 |
-| `@launcher_<id>_marker` | 無 | 由窗格目錄向上尋找包含此標記（例如 `.git`）的目錄；找不到時使用窗格目錄 |
-| `@launcher_<id>_if` | 無 | 啟動前執行的 shell 判斷；結束碼非零即取消啟動。`LAUNCHER_PATH` 存放起始目錄 |
-| `@launcher_<id>_prompt` | 無 | 提示文字；輸入的每個字詞都會作為加上引號的參數附加到指令後 |
-| `@launcher_<id>_group` | 無 | 以空格分隔的應用程式 ID，在一個新視窗中開啟並平鋪 |
-| `@launcher_<id>_host` | 無 | 遠端主機；組合後的指令透過 `ssh -t` 執行 |
-| `@launcher_<id>_reuse` | off | 在 `window` 模式下設為 `on` 時，選取同名視窗而不是再開一個 |
-| `@launcher_<id>_env` | 無 | 用 `env` 放在指令前的變數，例如 `FOO=bar` |
-| `@launcher_<id>_pre` | 無 | 先執行的指令；只有它成功時才啟動應用程式 |
-| `@launcher_<id>_exit` | 無 | 應用程式結束後執行的指令 |
-
-### 內部狀態
-
-以下選項由插件自行寫入，請勿設定。
-
-| 選項 | 存放內容 |
-|:-----|:---------|
-| `@launcher_prompt_value` | 在應用程式提示中輸入的文字，啟動時讀取一次 |
-| `@launcher_picked` | 在 fzf 選擇器中選取的應用程式，啟動後清除 |
-
-<a id="key-bindings"></a>
-
-## 按鍵綁定
-
-| 按鍵 | 動作 | 預設 |
-|:-----|:-----|:-----|
-| `prefix + M-a` | `@launcher_apps` 中所有應用程式的選單 | 已綁定 |
-| `@launcher_<id>_key` | 啟動該應用程式 | 未綁定 |
-| `@launcher_picker_key` | fzf 應用程式選擇器 | 未綁定 |
-
-2.0.0 版移除了以往的專用按鍵。要還原它們：
+`@launcher_revamped_apps` 中的每個 ID 讀取自己的選項 `@launcher_revamped_<id>_<field>`：
 
 ```tmux
-set -g @launcher_lazygit_key 'C-g'
-set -g @launcher_yazi_key 'C-y'
+set -g @launcher_revamped_apps 'lazygit yazi htop k9s man dash'
+
+set -g @launcher_revamped_lazygit_key 'C-g'
+set -g @launcher_revamped_lazygit_marker '.git'
+set -g @launcher_revamped_lazygit_if 'git -C "$LAUNCHER_PATH" rev-parse 2>/dev/null'
+
+set -g @launcher_revamped_htop_mode 'split'
+set -g @launcher_revamped_k9s_host 'box.example'
+set -g @launcher_revamped_man_prompt 'man:'
+set -g @launcher_revamped_dash_group 'lazygit htop'
 ```
 
-<a id="how-it-works"></a>
+| 欄位 | 預設值 | 含義 |
+|:------|:--------|:--------|
+| `_key` | 無 | 應用程式自己的 prefix 按鍵 |
+| `_command` | ID | 執行的內容 |
+| `_mode` | `popup`，yazi 為 `window` | `popup`、`window` 或 `split`；彈出視窗需要 tmux 3.2 |
+| `_name` | ID | 視窗名稱和選單標籤 |
+| `_width`、`_height` | `80%` | 彈出視窗的大小 |
+| `_marker` | 無 | 應用程式自己的項目標記 |
+| `_if` | 無 | 先執行的 shell 檢查；非零結束時應用程式不會開啟，`LAUNCHER_PATH` 保存它將開啟的資料夾 |
+| `_prompt` | 無 | 先顯示的提示；輸入的每個詞成為一個加引號的參數 |
+| `_group` | 無 | 在一個新視窗中平鋪開啟的應用程式 ID |
+| `_host` | 無 | 透過 `ssh -t` 執行的主機 |
+| `_reuse` | `off` | `on` 時，如果同名視窗已開啟就選取它 |
+| `_env` | 無 | 在命令前設定的變數，例如 `A=1` |
+| `_pre` | 無 | 必須先成功的命令 |
+| `_exit` | 無 | 結束後執行的命令 |
 
-## 運作原理
+有圖片預覽的檔案管理員，例如 yazi、lf 和 ranger，較適合 `window` 模式：tmux 彈出視窗不會傳遞圖片跳脫序列。
 
-tmux 載入插件時，[`launcher-revamped.tmux`](launcher-revamped.tmux) 會執行一次 [`src/launcher.sh`](src/launcher.sh)。該腳本讀取選項，並綁定選單、選擇器和每個應用程式的按鍵。每個綁定都透過 `run-shell -b` 以 `dispatch <id>` 回呼同一個腳本，所以實際工作在按下按鍵時才進行。
+命令按 `pre && env VARS command ARGS; exit` 組合，有主機時整體包在 `ssh -t` 中。選擇器在彈出視窗中執行，把選中的 ID 記錄在 `@launcher_revamped_picked`；`launch-picked` 在彈出視窗關閉後開啟它，因此彈出視窗應用程式亦能開啟自己的彈出視窗。
 
-啟動時，`dispatch` 決定起始目錄，執行 `_if` 判斷，然後按以下次序組合指令：`pre &&`、`env` 變數、指令及其提示參數、`; exit`。設定主機後，整個結果會用 `ssh -t` 包裝。模式決定使用 `display-popup -E`、`new-window` 還是 `split-window`。在沒有 `display-popup` 的 tmux 3.2 以下版本中，彈出視窗應用程式會改為在視窗中開啟。
+<a id="畫面"></a>
 
-fzf 選擇器在 `display-popup -E` 中執行，將選取的 ID 存放到 `@launcher_picked`，並在彈出視窗關閉後啟動它。這樣彈出視窗應用程式亦可開啟自己的彈出視窗。
+## 畫面
 
-純函數輔助程式碼位於 [`src/lib/launcher/launcher.sh`](src/lib/launcher/launcher.sh)。設定 `LAUNCHER_DRY_RUN` 後，腳本會列印每個 tmux 呼叫而不執行，測試套件就是用這方法檢查按鍵綁定。
+<details>
+<summary>所有畫面，在真實的 tmux 中用 <code>make screens</code> 錄製，每個按鍵顯示在狀態列上</summary>
+<br>
 
-<a id="development"></a>
+<table>
+<tr>
+<td width="50%" valign="top"><img src="screens/menu.png" alt="launcher-revamped：prefix M-a 上的應用程式選單"><br><sub>prefix M-a 上的應用程式選單，來自 <code>apps.tape</code></sub></td>
+<td width="50%" valign="top"><img src="screens/popup.png" alt="launcher-revamped：在項目根目錄以彈出視窗開啟的 lazygit"><br><sub>在項目根目錄以彈出視窗開啟的 lazygit，來自 <code>apps.tape</code></sub></td>
+</tr>
+<tr>
+<td width="50%" valign="top"><img src="screens/window.png" alt="launcher-revamped：在獨立視窗中開啟的 tig"><br><sub>在獨立視窗中開啟的 tig，來自 <code>apps.tape</code></sub></td>
+<td width="50%" valign="top"><img src="screens/split.png" alt="launcher-revamped：工作旁邊的分割窗格"><br><sub>工作旁邊的分割窗格，來自 <code>apps.tape</code></sub></td>
+</tr>
+<tr>
+<td width="50%" valign="top"><img src="screens/prompt.png" alt="launcher-revamped：輸入的詞成為參數的提示"><br><sub>輸入的詞成為參數的提示，來自 <code>apps.tape</code></sub></td>
+<td width="50%" valign="top"><img src="screens/picker.png" alt="launcher-revamped：fzf 應用程式選擇器"><br><sub>fzf 應用程式選擇器，來自 <code>apps.tape</code></sub></td>
+</tr>
+<tr>
+<td width="50%" valign="top"><img src="screens/group.png" alt="launcher-revamped：在一個視窗中平鋪的一組應用程式"><br><sub>在一個視窗中平鋪的一組應用程式，來自 <code>apps.tape</code></sub></td>
+<td width="50%" valign="top"><img src="screens/list.png" alt="launcher-revamped：list"><br><sub><code>list</code>，來自 <code>stills.tape</code></sub></td>
+</tr>
+<tr>
+<td width="50%" valign="top"><img src="screens/json.png" alt="launcher-revamped：list --json"><br><sub><code>list --json</code>，來自 <code>stills.tape</code></sub></td>
+<td width="50%" valign="top"><img src="screens/doctor.png" alt="launcher-revamped：doctor"><br><sub><code>doctor</code>，來自 <code>stills.tape</code></sub></td>
+</tr>
+<tr>
+<td width="50%" valign="top"><img src="screens/plain-menu.png" alt="launcher-revamped：沒有 gum 的選單"><br><sub>沒有 gum 的選單，來自 <code>stills.tape</code></sub></td>
+<td width="50%" valign="top"><img src="screens/plain-apply.png" alt="launcher-revamped：從選單執行 apply"><br><sub>從選單執行 <code>apply</code>，來自 <code>stills.tape</code></sub></td>
+</tr>
+<tr>
+<td width="50%" valign="top"><img src="screens/version.png" alt="launcher-revamped：版本"><br><sub>版本，來自 <code>stills.tape</code></sub></td>
+<td width="50%" valign="top"><img src="screens/error.png" alt="launcher-revamped：不明命令"><br><sub>不明命令，來自 <code>stills.tape</code></sub></td>
+</tr>
+<tr>
+<td width="50%" valign="top"><img src="screens/themes.png" alt="launcher-revamped：六種主題下的標題"><br><sub>六種主題下的標題，來自 <code>stills.tape</code></sub></td>
+<td width="50%" valign="top"><img src="screens/help.png" alt="launcher-revamped：說明頁"><br><sub>說明頁，來自 <code>themes.tape</code></sub></td>
+</tr>
+<tr>
+<td width="50%" valign="top"><img src="screens/accent.png" alt="launcher-revamped：來自 LAUNCHER_REVAMPED_ACCENT 的強調色"><br><sub>來自 <code>LAUNCHER_REVAMPED_ACCENT</code> 的強調色，來自 <code>help.tape</code></sub></td>
+<td width="50%" valign="top"></td>
+</tr>
+</table>
+
+</details>
+
+## 可攜性
+
+插件是 POSIX `sh`。CI 在下列每一行上執行全部測試。
+
+| Shell | 狀態 |
+|:------|:-------|
+| `dash`、macOS 上的 `/bin/sh` | 支援 |
+| `bash` 3.2 和 5.x、系統內建的 `zsh` 和 Homebrew 的 `zsh` | 支援 |
+
+| 系統 | 狀態 |
+|:-------|:-------|
+| macOS | Apple Silicon 和 Intel 上的 Tahoe，使用內建的工具、Homebrew 的 GNU 工具和 Homebrew 的 uutils |
+| Linux | x86_64 和 arm64 上的 Ubuntu 26.04，使用 GNU coreutils、uutils 和 BusyBox |
 
 ## 開發
 
-| 指令 | 作用 |
-|:-----|:-----|
-| `make test` | 執行 bats 測試套件 |
-| `make lint` | 對所有 shell 檔案執行 shellcheck |
-| `make coverage` | 在 Linux 上用 kcov 量度行覆蓋率，低於 95% 時失敗 |
+| 指令 | 執行內容 |
+|:--------|:-------------|
+| `make fmt` | 對每個腳本執行 shfmt `-i 2` |
+| `make lint` | shfmt、ShellCheck、mandoc、yamllint 和 actionlint，零警告 |
+| `make test` | 在系統 `sh` 下執行 bats 測試 |
+| `make test-all` | 在每個已安裝的 shell 下執行測試，macOS 上包括 bash 和 zsh 的兩種版本 |
+| `make test-linux` | 在 Ubuntu 容器中執行測試 |
+| `make coverage` | 在這部 Mac 和 Ubuntu 容器中執行 bashcov，合併後以 100% 為門檻 |
+| `make screens` | 以 VHS 在 tmux 中從真實插件錄製上述畫面，在 macOS 上執行 |
+| `make install` | 把指令、man 手冊和自動完成安裝到 `PREFIX` 下 |
 
-變更紀錄見 [CHANGELOG.md](CHANGELOG.md)。
-
-<a id="license"></a>
+提交遵循 Conventional Commits 格式，直接進入 `main`。`main` 上的 `ci` 通過後，`release.yml` 會執行 semantic-release：自上一個標籤以來的每個 `feat` 或 `fix` 都會發佈新版本，更新版本常數，並把說明寫入 [`CHANGELOG.md`](CHANGELOG.md)。
 
 ## 授權
 
-[MIT](LICENSE)
+[MIT](LICENSE)，copyright Gustavo Franco。
 
 <!-- family:begin -->
 

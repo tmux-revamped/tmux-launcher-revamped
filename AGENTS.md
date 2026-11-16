@@ -8,53 +8,44 @@ Guidance for anyone, human or agent, changing tmux-launcher-revamped. What it is
 
 | Path | Holds |
 |:-----|:------|
-| [`launcher-revamped.tmux`](launcher-revamped.tmux) | The entry point TPM runs |
-| [`src/launcher.sh`](src/launcher.sh) | The script the entry point and the keys call |
-| [`src/lib/launcher/`](src/lib/launcher) | This member's modules |
-| [`src/lib/utils/constants.sh`](src/lib/utils/constants.sh) | This member's constants, including its version |
-| [`src/lib/utils/`](src/lib/utils), [`src/lib/tmux/`](src/lib/tmux) | The shared library. Every file there except `constants.sh` is identical in every member |
-| [`test/`](test) | The bats suite. `helpers.bash` and `tmux_helpers.bash` are identical in every member; this member's own mocks go in the `_local` files |
+| [`launcher-revamped.tmux`](launcher-revamped.tmux) | The entry point TPM runs: it runs `bin/launcher-revamped apply` |
+| [`bin/launcher-revamped`](bin/launcher-revamped) | The command: `apply`, `list`, `launch`, `pick`, `launch-picked`, `doctor`, `version`, `help` and the menu. `apply`, `launch`, `pick` and `launch-picked` run without loading the interface modules |
+| [`lib/launcher.sh`](lib/launcher.sh) | Reading the settings, the version checks and the binding plan |
+| [`lib/launch.sh`](lib/launch.sh) | Opening an app: the marker search, the command, the mode, groups and the picker |
+| [`lib/state.sh`](lib/state.sh) | Every global, including `LAUNCHER_REVAMPED_GLOBALS` and `LAUNCHER_REVAMPED_FIELDS`, the tables of setting names and defaults the rest reads |
+| [`lib/core.sh`](lib/core.sh) | The version |
+| [`lib/`](lib) | Every other file is the shared library, identical in every member |
+| [`test/launcher.bats`](test/launcher.bats), [`test/launch.bats`](test/launch.bats), [`test/commands.bats`](test/commands.bats), [`test/entrypoint.bats`](test/entrypoint.bats) | This member's suites: the plan, opening apps through the tmux stub, the commands, and the entry point and launches on a private tmux server |
+| [`screens/`](screens) | The tapes and the recording's tmux config. `prepare.sh` copies the plugin to the demo folder, so no still shows a checkout path, and builds a demo git project; the config gives every pane the demo home, UTC and no fzf options of the person recording |
 
 ## Names
 
-- Settings are meant to be tmux options named `@launcher_revamped_<setting>`; see the gaps for the ones that are not yet.
+- Global settings are the tmux options `@launcher_revamped_apps`, `_menu_key`, `_picker_key`, `_marker`, `_max_depth` and `_skip_missing`. Each app ID reads `@launcher_revamped_<id>_<field>` for the fields in `LAUNCHER_REVAMPED_FIELDS`. Every one is also a long option with dashes, such as `--lazygit-key`, and an environment variable, such as `LAUNCHER_REVAMPED_LAZYGIT_KEY`.
+- The plugin writes `@launcher_revamped_typed`, the text typed at an app's prompt, and `@launcher_revamped_picked`, the ID the picker chose.
 - It has no status placeholders.
 - The version constant is `LAUNCHER_REVAMPED_VERSION`.
-- `LAUNCHER_DRY_RUN` is read from the environment.
-- Its command-line tool, once it exists, is `launcher-revamped`.
 
 ## Behaviour
 
-- Launches any terminal app in a popup or a window, in the current pane's directory, with one binding per app.
-- `M-a` opens the app launcher menu.
-- The entry point runs [`src/launcher.sh`](src/launcher.sh) once at load, which binds the menu, the picker and each app key. Every binding calls the script back with `dispatch <id>` through `run-shell -b`.
+- `apply` reads the globals and every app's fields with two `tmux display-message` calls and one `env` read, reads `list-keys` once for the menu key, builds the plan, and sends every binding to tmux in one call separated by `;`.
+- `launch` reads the globals, the app's fields and the pane's folder with one `tmux display-message` call. A group reads its members' fields with one more and opens them in one call.
+- An empty tmux option means its default; an empty environment variable or long option leaves that key unbound.
+- The plan holds one argument per line and a blank line between commands; an empty argument, the menu items' shortcut key, is written as `''` and sent to tmux as an empty string.
+- A menu key the person bound before the plugin loaded stays theirs, and `doctor` reports it.
+- The entry point clears every inherited `REVAMPED_` variable except the test switches, and every `LAUNCHER_REVAMPED_*_LOADED` guard; every other global is assigned outright in the state file.
 
 ## Domain rules
 
-- `dispatch` builds the command in this order: `pre &&`, `env` variables, the command and its prompt arguments, then `; exit`. A host wraps the whole result in `ssh -t`.
-- The fzf picker stores the chosen id in a server option and launches it after the popup closes, so a popup app can open its own popup.
-- `LAUNCHER_DRY_RUN` prints each tmux call instead of running it, which is how the suite checks the bindings.
+- A popup needs tmux 3.2; on an older tmux a popup app opens as a window. Notes on the bindings need tmux 3.1.
+- The marker search climbs from the pane's folder until it finds the marker, reaches the root or has climbed `max_depth` folders, and falls back to the pane's folder.
+- The command is `pre && env VARS command ARGS; exit`, and a host wraps all of it, quoted, in `ssh -t`. Each typed or passed word becomes one single-quoted argument.
+- The picker runs inside `display-popup -E` and only records its choice, so `launch-picked` opens the app after the popup closes and a popup app can open its own popup.
 
 ## Release
 
-- `LAUNCHER_REVAMPED_VERSION` in [`src/lib/utils/constants.sh`](src/lib/utils/constants.sh) holds the version. It must equal the newest versioned heading in [`CHANGELOG.md`](CHANGELOG.md) and the README's version badge, which the `version` job in `tests.yml` checks.
-- A push to `main` whose version has no tag yet makes the `release` job in `tests.yml` tag `vX.Y.Z` and publish a GitHub release with that changelog section.
-- Unreleased changes sit under `## [Unreleased]` in [`CHANGELOG.md`](CHANGELOG.md) until a release is cut.
+- `LAUNCHER_REVAMPED_VERSION` in [`lib/core.sh`](lib/core.sh) holds the version. Nobody edits it by hand.
+- After a green `ci` run on `main`, [`release.yml`](.github/workflows/release.yml) runs semantic-release: a `feat` or `fix` since the last tag publishes a release, [`set-version.sh`](.github/scripts/set-version.sh) stamps the constant, and the notes go into [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Gaps against FAMILY.md
 
-As of 2026-11-15:
-
-- Every script is bash, under `#!/usr/bin/env bash`, not POSIX `sh`, so it is untested under `dash`, `zsh` and BusyBox `sh`.
-- The code lives in [`src/`](src) and [`src/lib/`](src/lib); there is no `bin/launcher-revamped`, `lib/state.sh` or `lib/core.sh`.
-- No `launcher-revamped` command with `help`, `version` and `doctor` in the family's form, no man page, no completions and no `manifest.json`.
-- No gum interface: no `lib/ui.sh`, `lib/table.awk`, themes or `test/bin/gum`.
-- No `screens/`: no VHS recording of each feature, no on-screen caption of the keys each recording presses, and no recordings in the README.
-- The README sections are not the family's order of Quick start, Usage, topic sections, Portability, Development and License.
-- Coverage is kcov with a 95 percent floor on Linux, not bashcov at 100 percent merged from macOS and Linux.
-- CI tests GNU, BSD and uutils tools in `tests.yml`, but not the six toolsets through `.github/scripts/toolset.sh`, and no shell matrix under `sh`, `dash`, `bash` and `zsh`.
-- No golden transcripts, `call.sh`, `run-matrix.sh` or `linux-container.sh`.
-- The version is written by hand and released by `tests.yml`; there is no semantic-release, `package.json`, `release.yml` with `recover`, `bot-merge.yml` or Renovate.
-- CI is `tests.yml` and `security.yml`, not `ci.yml`, and no job starts with `step-security/harden-runner`.
-- No `.editorconfig`, `.yamllint.yml` or shfmt; the Makefile has `help`, `test`, `test-unit`, `coverage`, `lint` and `clean`, not the family's targets.
-- Its settings are named `@launcher_*`, such as `@launcher_apps`, outside the `@launcher_revamped_*` pattern.
+As of 2026-11-16, none.

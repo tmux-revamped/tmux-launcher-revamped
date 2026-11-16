@@ -1,0 +1,3 @@
+$ launcher-revamped list --json
+{"bindings":[["bind-key","-N","Launcher menu","M-a","display-menu","-T","Launchers","lazygit","","run-shell -b ''\\''<path> launch '\\''lazygit'\\'''","yazi","","run-shell -b ''\\''<path> launch '\\''yazi'\\'''"]]}
+exit 0

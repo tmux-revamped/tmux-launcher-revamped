@@ -1,0 +1,3 @@
+$ launcher-revamped
+launcher-revamped: no command given. run 'launcher-revamped help' for usage.
+exit 1

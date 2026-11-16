@@ -1,0 +1,7 @@
+#!/bin/sh
+# shellcheck disable=SC2034
+
+[ -n "${LAUNCHER_REVAMPED_CORE_LOADED:-}" ] && return 0
+LAUNCHER_REVAMPED_CORE_LOADED=1
+
+readonly LAUNCHER_REVAMPED_VERSION="2.0.0"

@@ -1,0 +1,274 @@
+#!/bin/sh
+[ -n "${ZSH_VERSION:-}" ] && emulate sh
+set -eu
+
+launcher_revamped_self="$0"
+case "${launcher_revamped_self}" in
+*/*) ;;
+*) launcher_revamped_self="$(command -v -- "${launcher_revamped_self}")" ;;
+esac
+launcher_revamped_lib="$(cd "${launcher_revamped_self%/*}/../lib" && pwd)" || exit 1
+for launcher_revamped_inherited in $(env | sed -n -e 's/^\(REVAMPED_[A-Za-z0-9_]*\)=.*/\1/p' -e 's/^\(LAUNCHER_REVAMPED_[A-Za-z0-9_]*_LOADED\)=.*/\1/p'); do
+  case "${launcher_revamped_inherited}" in
+  REVAMPED_TEST_*) continue ;;
+  *) unset "${launcher_revamped_inherited}" ;;
+  esac
+done
+REVAMPED_LIB="${launcher_revamped_lib}"
+
+# shellcheck source=SCRIPTDIR/../lib/core.sh
+. "${REVAMPED_LIB}/core.sh"
+# shellcheck source=SCRIPTDIR/../lib/launch.sh
+. "${REVAMPED_LIB}/launch.sh"
+
+launcher_revamped_interface() {
+  # shellcheck disable=SC2034
+  REVAMPED_UI_NAME=launcher-revamped REVAMPED_UI_VERSION="${LAUNCHER_REVAMPED_VERSION}" REVAMPED_UI_TAGLINE="terminal apps one key away in tmux"
+  if [ -n "${LAUNCHER_REVAMPED_ACCENT:-}" ]; then
+    # shellcheck disable=SC2034
+    REVAMPED_UI_ACCENT_CHOICE="${LAUNCHER_REVAMPED_ACCENT}" REVAMPED_UI_ACCENT_NAME=LAUNCHER_REVAMPED_ACCENT
+  fi
+  # shellcheck source=SCRIPTDIR/../lib/cli.sh
+  . "${REVAMPED_LIB}/cli.sh"
+  # shellcheck source=SCRIPTDIR/../lib/doctor.sh
+  . "${REVAMPED_LIB}/doctor.sh"
+}
+
+launcher_revamped_usage() {
+  launcher_revamped_interface
+  revamped_cli_usage_error "$1"
+}
+
+launcher_revamped_help() {
+  revamped_cli_help_page <<'HELP'
+launcher-revamped - terminal apps one key away in tmux
+
+usage:
+  launcher-revamped apply             bind every key now
+  launcher-revamped list              print every binding apply would make
+  launcher-revamped launch ID [ARG]   open the app ID, with ARG appended
+  launcher-revamped pick              choose an app with fzf for launch-picked
+  launcher-revamped launch-picked     open the app pick chose
+  launcher-revamped doctor            check this machine
+  launcher-revamped version           print the version
+  launcher-revamped help              print this page
+
+options:
+  --json           list prints one JSON object
+  --theme NAME     the look: kodougu, catppuccin-mocha, catppuccin-latte,
+                   dracula, nord, gruvbox, tokyo-night or mono
+  --SETTING VALUE  any tmux option below, named with dashes, such as
+                   --menu-key M-o or --lazygit-key C-g
+
+environment:
+  LAUNCHER_REVAMPED_SETTING  any tmux option below in capitals, such as
+                             LAUNCHER_REVAMPED_LAZYGIT_KEY
+  LAUNCHER_REVAMPED_THEME    the look, when --theme is not given
+  LAUNCHER_REVAMPED_ACCENT   a colour such as #CBA6F7 for the accent
+  KODOUGU_THEME              the family look, when neither is given
+  KODOUGU_ACCENT             the family accent, when the tool's is unset
+  NO_COLOR                   turn colour off
+
+tmux options:
+  @launcher_revamped_apps          the app IDs (lazygit yazi)
+  @launcher_revamped_menu_key      the menu of every app (M-a), none for no
+                                   key
+  @launcher_revamped_picker_key    the fzf app picker (unbound)
+  @launcher_revamped_marker        the project marker every app uses, such
+                                   as .git (none)
+  @launcher_revamped_max_depth     folders the marker search climbs (20)
+  @launcher_revamped_skip_missing  on binds no key for an app whose command
+                                   is not installed (off)
+  @launcher_revamped_ID_key        the app's own key (unbound)
+  @launcher_revamped_ID_command    what it runs (the ID)
+  @launcher_revamped_ID_mode       popup, window or split (popup, window for
+                                   yazi)
+  @launcher_revamped_ID_name       window name and menu label (the ID)
+  @launcher_revamped_ID_width      popup width (80%)
+  @launcher_revamped_ID_height     popup height (80%)
+  @launcher_revamped_ID_marker     its own project marker (none)
+  @launcher_revamped_ID_if         a shell check that must pass first; it
+                                   reads the folder in LAUNCHER_PATH (none)
+  @launcher_revamped_ID_prompt     a prompt whose words become arguments
+                                   (none)
+  @launcher_revamped_ID_group      app IDs opened tiled in one window (none)
+  @launcher_revamped_ID_host       a host to run it on with ssh -t (none)
+  @launcher_revamped_ID_reuse      on selects its window if open (off)
+  @launcher_revamped_ID_env        variables set before it, such as A=1
+                                   (none)
+  @launcher_revamped_ID_pre        a command that must succeed first (none)
+  @launcher_revamped_ID_exit       a command run after it exits (none)
+  @revamped_theme                  the family look (kodougu)
+
+notes:
+  The entry point runs apply once when tmux loads the plugin, and every
+  binding goes to tmux in one call. Each app starts in the pane's folder,
+  or in the nearest folder above it that holds its marker. A popup needs
+  tmux 3.2; on an older tmux it opens as a window.
+
+examples:
+  launcher-revamped list
+  launcher-revamped launch lazygit
+  launcher-revamped --lazygit-key C-g apply
+HELP
+}
+
+launcher_revamped_version() {
+  launcher_revamped_tmux=$(tmux -V 2>/dev/null) || launcher_revamped_tmux=missing
+  printf '%s %s\n' launcher-revamped "${LAUNCHER_REVAMPED_VERSION}"
+  printf 'tmux: %s\n' "${launcher_revamped_tmux#tmux }"
+}
+
+launcher_revamped_doctor_fzf() {
+  launcher_revamped_doctor_fzf_path=$(command -v fzf 2>/dev/null) || launcher_revamped_doctor_fzf_path=""
+  if [ -n "${launcher_revamped_doctor_fzf_path}" ]; then
+    revamped_doctor_line fzf ok "${launcher_revamped_doctor_fzf_path}"
+    return 0
+  fi
+  revamped_doctor_line fzf warn "the picker needs it: brew install fzf, or apt install fzf"
+}
+
+launcher_revamped_doctor_app() {
+  launcher_revamped_field "$1" command
+  [ -n "${LAUNCHER_REVAMPED_VALUE}" ] || return 0
+  launcher_revamped_doctor_app_command="${LAUNCHER_REVAMPED_VALUE%% *}"
+  launcher_revamped_field "$1" host
+  if [ -n "${LAUNCHER_REVAMPED_VALUE}" ]; then
+    revamped_doctor_line "$1" ok "runs on ${LAUNCHER_REVAMPED_VALUE}"
+    return 0
+  fi
+  launcher_revamped_doctor_app_path=$(command -v "${launcher_revamped_doctor_app_command}" 2>/dev/null) || launcher_revamped_doctor_app_path=""
+  if [ -n "${launcher_revamped_doctor_app_path}" ]; then
+    revamped_doctor_line "$1" ok "${launcher_revamped_doctor_app_path}"
+    return 0
+  fi
+  revamped_doctor_line "$1" warn "${launcher_revamped_doctor_app_command} is not installed"
+}
+
+launcher_revamped_doctor_apps() {
+  launcher_revamped_plan
+  set -f
+  for launcher_revamped_doctor_id in ${LAUNCHER_REVAMPED_S_apps}; do
+    launcher_revamped_doctor_app "${launcher_revamped_doctor_id}"
+  done
+  set +f
+  [ -z "${LAUNCHER_REVAMPED_MENU_TAKEN}" ] || revamped_doctor_line "prefix ${LAUNCHER_REVAMPED_MENU_TAKEN}" warn "already bound, so the menu has no key; set @launcher_revamped_menu_key"
+}
+
+launcher_revamped_doctor() {
+  revamped_doctor_tmux
+  revamped_doctor_core_tools awk sed tr
+  launcher_revamped_doctor_fzf
+  [ "${REVAMPED_DOCTOR_MISSING}" -ne 0 ] || launcher_revamped_doctor_apps
+  revamped_doctor_gum
+  revamped_doctor_finish
+  [ "${REVAMPED_DOCTOR_MISSING}" -eq 0 ] || exit 1
+}
+
+launcher_revamped_list() {
+  launcher_revamped_plan
+  if [ -n "${launcher_revamped_json}" ]; then
+    launcher_revamped_json
+    return 0
+  fi
+  launcher_revamped_lines
+}
+
+launcher_revamped_apply_command() {
+  launcher_revamped_apply
+  launcher_revamped_count=$(launcher_revamped_bindings)
+  printf 'Applied. %s keys are bound.\n' "${launcher_revamped_count}"
+}
+
+launcher_revamped_menu() {
+  revamped_cli_require_terminal
+  launcher_revamped_choice=$(revamped_cli_menu "List the bindings" "Apply them now" "Check this machine" "Help")
+  case "${launcher_revamped_choice}" in
+  "List the bindings") launcher_revamped_list ;;
+  "Apply them now") launcher_revamped_apply_command ;;
+  "Check this machine") launcher_revamped_doctor ;;
+  *) launcher_revamped_help ;;
+  esac
+}
+
+launcher_revamped_dispatch() {
+  case "${1:-}" in
+  doctor) launcher_revamped_doctor ;;
+  version | --version | -V) launcher_revamped_version ;;
+  help | --help | -h) launcher_revamped_help ;;
+  list) launcher_revamped_list ;;
+  "") launcher_revamped_menu ;;
+  *) revamped_cli_usage_error "unknown command '$1'" ;;
+  esac
+}
+
+launcher_revamped_known() {
+  [ "$1" != --theme ] || return 0
+  launcher_revamped_known_name=$(launcher_revamped_setting_name "$1")
+  [ -n "${launcher_revamped_known_name}" ] || launcher_revamped_usage "unknown option '$1'"
+}
+
+launcher_revamped_set() {
+  launcher_revamped_set_upper=$(printf '%s\n' "$1" | tr '[:lower:]' '[:upper:]')
+  export "LAUNCHER_REVAMPED_${launcher_revamped_set_upper}=$2"
+}
+
+launcher_revamped_option() {
+  launcher_revamped_option_name=$(launcher_revamped_setting_name "$1")
+  [ -n "${launcher_revamped_option_name}" ] || launcher_revamped_usage "unknown option '$1'"
+  launcher_revamped_set "${launcher_revamped_option_name}" "$2"
+}
+
+launcher_revamped_main() {
+  launcher_revamped_theme="${LAUNCHER_REVAMPED_THEME:-}" launcher_revamped_json="" launcher_revamped_count=$# launcher_revamped_rest=0
+  while [ "${launcher_revamped_count}" -gt 0 ]; do
+    launcher_revamped_arg="$1"
+    shift
+    launcher_revamped_count=$((launcher_revamped_count - 1))
+    case "${launcher_revamped_rest}:${launcher_revamped_arg}" in
+    1:*) set -- "$@" "${launcher_revamped_arg}" ;;
+    0:--) launcher_revamped_rest=1 ;;
+    0:--json) launcher_revamped_json=1 ;;
+    0:-h | 0:-V | 0:--help | 0:--version) set -- "$@" "${launcher_revamped_arg}" ;;
+    0:--theme=*) launcher_revamped_theme="${launcher_revamped_arg#--theme=}" ;;
+    0:--*=*) launcher_revamped_option "${launcher_revamped_arg%%=*}" "${launcher_revamped_arg#*=}" ;;
+    0:--*)
+      launcher_revamped_known "${launcher_revamped_arg}"
+      [ "${launcher_revamped_count}" -gt 0 ] || launcher_revamped_usage "option '${launcher_revamped_arg}' needs a value"
+      if [ "${launcher_revamped_arg}" = --theme ]; then
+        launcher_revamped_theme="$1"
+      else
+        launcher_revamped_option "${launcher_revamped_arg}" "$1"
+      fi
+      shift
+      launcher_revamped_count=$((launcher_revamped_count - 1))
+      ;;
+    0:-?*) launcher_revamped_usage "unknown option '${launcher_revamped_arg}'" ;;
+    *) set -- "$@" "${launcher_revamped_arg}" ;;
+    esac
+  done
+  launcher_revamped_run "${launcher_revamped_theme}" "$@"
+}
+
+launcher_revamped_run() {
+  launcher_revamped_run_theme="$1"
+  shift
+  [ -z "${launcher_revamped_json}" ] || [ "${1:-}" = list ] || launcher_revamped_usage "option '--json' works only with list"
+  case "${1:-}:$#" in
+  apply:*) launcher_revamped_apply ;;
+  launch:1) launcher_revamped_usage "no app given" ;;
+  launch:*)
+    shift
+    launcher_revamped_launch "$@"
+    ;;
+  pick:*) launcher_revamped_pick ;;
+  launch-picked:*) launcher_revamped_launch_picked ;;
+  *)
+    launcher_revamped_interface
+    revamped_cli_start "${launcher_revamped_run_theme}"
+    launcher_revamped_dispatch "$@"
+    ;;
+  esac
+}
+
+launcher_revamped_main "$@"

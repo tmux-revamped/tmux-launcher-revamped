@@ -1,0 +1,32 @@
+#compdef launcher-revamped
+
+_launcher_revamped() {
+  local -a commands
+  commands=(
+    'apply:bind every key now'
+    'list:print every binding apply would make'
+    'launch:open an app'
+    'pick:choose an app with fzf'
+    'launch-picked:open the app pick chose'
+    'doctor:check this machine'
+    'version:print the version'
+    'help:print the help page'
+  )
+
+  _arguments \
+    '--json[list prints one JSON object]' \
+    '--theme[colours of the terminal interface]:theme:(kodougu catppuccin-mocha catppuccin-latte dracula nord gruvbox tokyo-night mono)' \
+    '--apps[the app IDs]:value:' \
+    '--menu-key[the menu key]:value:' \
+    '--picker-key[the picker key]:value:' \
+    '--marker[the project marker]:value:' \
+    '--max-depth[folders the marker search climbs]:value:' \
+    '--skip-missing[skip apps that are not installed]:value:(on off)' \
+    '1:command:->command'
+
+  if [[ "${state}" == command ]]; then
+    _describe 'command' commands
+  fi
+}
+
+_launcher_revamped "$@"

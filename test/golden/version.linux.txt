@@ -1,0 +1,4 @@
+$ launcher-revamped version
+launcher-revamped <version>
+tmux: 3.8
+exit 0

@@ -1,0 +1,71 @@
+$ launcher-revamped help
+launcher-revamped - terminal apps one key away in tmux
+
+usage:
+  launcher-revamped apply             bind every key now
+  launcher-revamped list              print every binding apply would make
+  launcher-revamped launch ID [ARG]   open the app ID, with ARG appended
+  launcher-revamped pick              choose an app with fzf for launch-picked
+  launcher-revamped launch-picked     open the app pick chose
+  launcher-revamped doctor            check this machine
+  launcher-revamped version           print the version
+  launcher-revamped help              print this page
+
+options:
+  --json           list prints one JSON object
+  --theme NAME     the look: kodougu, catppuccin-mocha, catppuccin-latte,
+                   dracula, nord, gruvbox, tokyo-night or mono
+  --SETTING VALUE  any tmux option below, named with dashes, such as
+                   --menu-key M-o or --lazygit-key C-g
+
+environment:
+  LAUNCHER_REVAMPED_SETTING  any tmux option below in capitals, such as
+                             LAUNCHER_REVAMPED_LAZYGIT_KEY
+  LAUNCHER_REVAMPED_THEME    the look, when --theme is not given
+  LAUNCHER_REVAMPED_ACCENT   a colour such as #CBA6F7 for the accent
+  KODOUGU_THEME              the family look, when neither is given
+  KODOUGU_ACCENT             the family accent, when the tool's is unset
+  NO_COLOR                   turn colour off
+
+tmux options:
+  @launcher_revamped_apps          the app IDs (lazygit yazi)
+  @launcher_revamped_menu_key      the menu of every app (M-a), none for no
+                                   key
+  @launcher_revamped_picker_key    the fzf app picker (unbound)
+  @launcher_revamped_marker        the project marker every app uses, such
+                                   as .git (none)
+  @launcher_revamped_max_depth     folders the marker search climbs (20)
+  @launcher_revamped_skip_missing  on binds no key for an app whose command
+                                   is not installed (off)
+  @launcher_revamped_ID_key        the app's own key (unbound)
+  @launcher_revamped_ID_command    what it runs (the ID)
+  @launcher_revamped_ID_mode       popup, window or split (popup, window for
+                                   yazi)
+  @launcher_revamped_ID_name       window name and menu label (the ID)
+  @launcher_revamped_ID_width      popup width (80%)
+  @launcher_revamped_ID_height     popup height (80%)
+  @launcher_revamped_ID_marker     its own project marker (none)
+  @launcher_revamped_ID_if         a shell check that must pass first; it
+                                   reads the folder in LAUNCHER_PATH (none)
+  @launcher_revamped_ID_prompt     a prompt whose words become arguments
+                                   (none)
+  @launcher_revamped_ID_group      app IDs opened tiled in one window (none)
+  @launcher_revamped_ID_host       a host to run it on with ssh -t (none)
+  @launcher_revamped_ID_reuse      on selects its window if open (off)
+  @launcher_revamped_ID_env        variables set before it, such as A=1
+                                   (none)
+  @launcher_revamped_ID_pre        a command that must succeed first (none)
+  @launcher_revamped_ID_exit       a command run after it exits (none)
+  @revamped_theme                  the family look (kodougu)
+
+notes:
+  The entry point runs apply once when tmux loads the plugin, and every
+  binding goes to tmux in one call. Each app starts in the pane's folder,
+  or in the nearest folder above it that holds its marker. A popup needs
+  tmux 3.2; on an older tmux it opens as a window.
+
+examples:
+  launcher-revamped list
+  launcher-revamped launch lazygit
+  launcher-revamped --lazygit-key C-g apply
+exit 0
