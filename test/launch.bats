@@ -44,7 +44,7 @@ fake_fzf() {
   # Assert
   [[ "${status}" -eq 0 ]]
   run opened
-  [[ "${output}" == "display-popup|-E|-w|80%|-h|80%|-d|#{pane_current_path}|lazygit" ]]
+  [[ "${output}" == "display-popup|-E|-w|80%|-h|80%|-d|##{pane_current_path}|lazygit" ]]
 }
 
 @test "launch - a popup opens as a window before tmux 3.2" {
@@ -56,7 +56,7 @@ fake_fzf() {
 
   # Assert
   run opened
-  [[ "${output}" == "new-window|-n|lazygit|-c|#{pane_current_path}|lazygit" ]]
+  [[ "${output}" == "new-window|-n|lazygit|-c|##{pane_current_path}|lazygit" ]]
 }
 
 @test "launch - yazi opens a window by default" {
@@ -68,7 +68,7 @@ fake_fzf() {
 
   # Assert
   run opened
-  [[ "${output}" == "new-window|-n|yazi|-c|#{pane_current_path}|yazi" ]]
+  [[ "${output}" == "new-window|-n|yazi|-c|##{pane_current_path}|yazi" ]]
 }
 
 @test "launch - an unknown mode opens a window" {
@@ -80,7 +80,7 @@ fake_fzf() {
 
   # Assert
   run opened
-  [[ "${output}" == "new-window|-n|btop|-c|#{pane_current_path}|btop" ]]
+  [[ "${output}" == "new-window|-n|btop|-c|##{pane_current_path}|btop" ]]
 }
 
 @test "launch - the popup size, env, pre and exit hooks shape the command" {
@@ -96,7 +96,7 @@ fake_fzf() {
 
   # Assert
   run opened
-  [[ "${output}" == "display-popup|-E|-w|60%|-h|40%|-d|#{pane_current_path}|git fetch && env A=1 B=2 lazygit; tmux refresh-client -S" ]]
+  [[ "${output}" == "display-popup|-E|-w|60%|-h|40%|-d|##{pane_current_path}|git fetch && env A=1 B=2 lazygit; tmux refresh-client -S" ]]
 }
 
 @test "launch - a host runs the whole command over ssh -t" {
@@ -110,7 +110,7 @@ fake_fzf() {
 
   # Assert
   run opened
-  [[ "${output}" == "split-window|-c|#{pane_current_path}|ssh -t 'box'\\''s' 'cd /srv && k9s'" ]]
+  [[ "${output}" == "split-window|-c|##{pane_current_path}|ssh -t 'box'\\''s' 'cd /srv && k9s'" ]]
 }
 
 @test "launch - every word after the app becomes one quoted argument" {
@@ -122,7 +122,7 @@ fake_fzf() {
 
   # Assert
   run opened
-  [[ "${output}" == "split-window|-c|#{pane_current_path}|man 'printf' '3' 'it'\\''s'" ]]
+  [[ "${output}" == "split-window|-c|##{pane_current_path}|man 'printf' '3' 'it'\\''s'" ]]
 }
 
 @test "launch - an app with an empty command opens nothing" {
@@ -252,7 +252,7 @@ fake_fzf() {
   run tmux_calls
   [[ "${output}" == *"set-option -gqu @launcher_revamped_picked"* ]]
   run opened
-  [[ "${output}" == "new-window|-n|yazi|-c|#{pane_current_path}|yazi" ]]
+  [[ "${output}" == "new-window|-n|yazi|-c|##{pane_current_path}|yazi" ]]
 }
 
 @test "launch-picked - no recorded app launches nothing" {

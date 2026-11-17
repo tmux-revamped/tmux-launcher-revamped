@@ -82,9 +82,10 @@ windows() {
 }
 
 start_in() {
-  local want now tries=0
+  local want now tries=0 start
   want=$(cd "$1" && pwd -P)
-  tmux respawn-pane -k -t test -c "$1"
+  start=$(printf '%s\n' "$1" | sed 's/#/##/g')
+  tmux respawn-pane -k -t test -c "${start}"
   now=$(tmux display-message -p -t test '#{pane_current_path}')
   while [[ "${now}" != "${want}" ]]; do
     tries=$((tries + 1))
@@ -214,6 +215,44 @@ start_in() {
   [[ "${status}" -eq 0 ]]
   settled_windows "demo 1 ${root}"
   [[ "${lines[1]}" == "demo 1 ${root}" ]]
+}
+
+@test "launch - a window starts in a folder whose name holds a hash tmux reads as a format" {
+  # Arrange
+  local folder="${BATS_TEST_TMPDIR}/it's #S dir" real
+  mkdir -p "${folder}"
+  real=$(cd "${folder}" && pwd -P)
+  start_in "${folder}"
+  set_option @launcher_revamped_demo_mode window
+  set_option @launcher_revamped_demo_command 'sleep 30'
+
+  # Act
+  launch demo
+
+  # Assert
+  [[ "${status}" -eq 0 ]]
+  settled_windows "demo 1 ${real}"
+  [[ "${lines[1]}" == "demo 1 ${real}" ]]
+}
+
+@test "launch - a group starts every member in a folder whose name holds such a hash" {
+  # Arrange
+  local folder="${BATS_TEST_TMPDIR}/it's #S dir" real paths
+  mkdir -p "${folder}"
+  real=$(cd "${folder}" && pwd -P)
+  start_in "${folder}"
+  set_option @launcher_revamped_dash_group 'one two'
+  set_option @launcher_revamped_one_command 'sleep 30'
+  set_option @launcher_revamped_two_command 'sleep 31'
+
+  # Act
+  launch dash
+
+  # Assert
+  [[ "${status}" -eq 0 ]]
+  settled_windows "one 2 ${real}"
+  paths=$(tmux list-panes -t test:one -F '#{pane_current_path}')
+  [[ "${paths}" == "${real}"$'\n'"${real}" ]]
 }
 
 @test "launch - a split opens beside the work in the pane's folder" {

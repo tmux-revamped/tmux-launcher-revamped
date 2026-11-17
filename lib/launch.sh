@@ -38,6 +38,10 @@ launcher_revamped_walk() {
   printf '%s' "$1"
 }
 
+launcher_revamped_start() {
+  printf '%s\n' "$1" | sed 's/#/##/g'
+}
+
 launcher_revamped_scope() {
   launcher_revamped_field "$1" marker
   launcher_revamped_scope_marker="${LAUNCHER_REVAMPED_VALUE:-${LAUNCHER_REVAMPED_S_marker}}"
@@ -140,13 +144,14 @@ ${launcher_revamped_launch_rows}"
   if [ -n "${LAUNCHER_REVAMPED_VALUE}" ] && ! LAUNCHER_PATH="${launcher_revamped_launch_scope}" sh -c "${LAUNCHER_REVAMPED_VALUE}"; then
     return 0
   fi
+  launcher_revamped_launch_start=$(launcher_revamped_start "${launcher_revamped_launch_scope}")
   launcher_revamped_field "${launcher_revamped_launch_id}" group
   if [ -n "${LAUNCHER_REVAMPED_VALUE}" ]; then
-    launcher_revamped_group "${LAUNCHER_REVAMPED_VALUE}" "${launcher_revamped_launch_scope}"
+    launcher_revamped_group "${LAUNCHER_REVAMPED_VALUE}" "${launcher_revamped_launch_start}"
     return 0
   fi
   launcher_revamped_launch_full=$(launcher_revamped_compose "${launcher_revamped_launch_id}" "${launcher_revamped_launch_command}")
-  launcher_revamped_open "${launcher_revamped_launch_id}" "${launcher_revamped_launch_scope}" "${launcher_revamped_launch_full}"
+  launcher_revamped_open "${launcher_revamped_launch_id}" "${launcher_revamped_launch_start}" "${launcher_revamped_launch_full}"
 }
 
 launcher_revamped_pick() {
