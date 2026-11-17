@@ -130,9 +130,54 @@ launcher_revamped_bind() {
   launcher_revamped_emit bind-key "$@"
 }
 
+launcher_revamped_literal() {
+  printf '%s\n' "$1" | sed -e "s/'/'\\\\''/g" -e "s/#/'\"\$(printf '%b' '\\\\0043')\"'/g" -e "1s/^/'/" -e "\$s/\$/'/"
+}
+
+launcher_revamped_carried_rows() {
+  env | LAUNCHER_REVAMPED_ROWS="$1" awk '
+    BEGIN {
+      count = split(ENVIRON["LAUNCHER_REVAMPED_ROWS"], rows, "\n")
+      for (i = 1; i <= count; i++) {
+        split(rows[i], field, "\t")
+        name[i] = field[1]
+        gsub(/[^A-Za-z0-9_]/, "_", name[i])
+        if (name[i] !~ /_key$/) { want["LAUNCHER_REVAMPED_" toupper(name[i])] = i }
+      }
+    }
+    {
+      at = index($0, "=")
+      key = substr($0, 1, at - 1)
+      if (key in want) { value[want[key]] = substr($0, at + 1) }
+    }
+    END {
+      for (i = 1; i <= count; i++) {
+        if (value[i] == "") { continue }
+        option = name[i]
+        gsub(/_/, "-", option)
+        print option "\t" value[i]
+      }
+    }
+  '
+}
+
+launcher_revamped_carried() {
+  launcher_revamped_carried_out=""
+  launcher_revamped_carried_apps=$(launcher_revamped_app_rows "${LAUNCHER_REVAMPED_S_apps}")
+  launcher_revamped_carried_list=$(launcher_revamped_carried_rows "${LAUNCHER_REVAMPED_GLOBALS}
+${launcher_revamped_carried_apps}")
+  while IFS='	' read -r launcher_revamped_carried_name launcher_revamped_carried_value; do
+    [ -n "${launcher_revamped_carried_name}" ] || continue
+    launcher_revamped_carried_out="${launcher_revamped_carried_out} --${launcher_revamped_carried_name} $(launcher_revamped_literal "${launcher_revamped_carried_value}")"
+  done <<EOF
+${launcher_revamped_carried_list}
+EOF
+  printf '%s' "${launcher_revamped_carried_out}"
+}
+
 launcher_revamped_plan_tool() {
-  launcher_revamped_plan_tool_path=$(printf '%s\n' "${REVAMPED_LIB%/lib}/bin/launcher-revamped" | sed -e 's/#/##/g')
-  LAUNCHER_REVAMPED_TOOL=$(launcher_revamped_quote "${launcher_revamped_plan_tool_path}")
+  launcher_revamped_plan_tool_path=$(launcher_revamped_literal "${REVAMPED_LIB%/lib}/bin/launcher-revamped")
+  LAUNCHER_REVAMPED_TOOL="${launcher_revamped_plan_tool_path}$(launcher_revamped_carried)"
 }
 
 launcher_revamped_missing() {
@@ -150,7 +195,7 @@ launcher_revamped_plan_app() {
   ! launcher_revamped_missing "$1" "${LAUNCHER_REVAMPED_VALUE}" || return 0
   launcher_revamped_field "$1" name
   launcher_revamped_plan_app_note="Launch ${LAUNCHER_REVAMPED_VALUE}"
-  launcher_revamped_plan_app_id=$(launcher_revamped_quote "$1")
+  launcher_revamped_plan_app_id=$(launcher_revamped_literal "$1")
   launcher_revamped_plan_app_run="TMUX_PANE=#{pane_id} ${LAUNCHER_REVAMPED_TOOL} launch ${launcher_revamped_plan_app_id}"
   launcher_revamped_field "$1" prompt
   if [ -z "${LAUNCHER_REVAMPED_VALUE}" ]; then
@@ -170,7 +215,7 @@ launcher_revamped_menu_items() {
   set -f
   for launcher_revamped_menu_items_id in ${LAUNCHER_REVAMPED_S_apps}; do
     launcher_revamped_field "${launcher_revamped_menu_items_id}" name
-    launcher_revamped_menu_items_quoted=$(launcher_revamped_quote "${launcher_revamped_menu_items_id}")
+    launcher_revamped_menu_items_quoted=$(launcher_revamped_literal "${launcher_revamped_menu_items_id}")
     launcher_revamped_menu_items_run=$(launcher_revamped_quote "TMUX_PANE=#{pane_id} ${LAUNCHER_REVAMPED_TOOL} launch ${launcher_revamped_menu_items_quoted}")
     printf '%s\n%s\n%s\n' "${LAUNCHER_REVAMPED_VALUE}" "${LAUNCHER_REVAMPED_EMPTY}" "run-shell -b ${launcher_revamped_menu_items_run}"
   done

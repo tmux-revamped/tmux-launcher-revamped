@@ -33,7 +33,10 @@ lists every app, and any app can have a key of its own. The entry point
 runs
 .B apply
 once when tmux loads the plugin, and every binding goes to tmux in one call.
-A menu key the person bound before the plugin loaded stays theirs.
+A menu key the person bound before the plugin loaded stays theirs. A setting
+given as a tmux option is read when an app launches; one given to
+.B apply
+on the command line or in the environment rides on the keys it binds.
 .PP
 Run with no command on a terminal, it offers a menu.
 .SH COMMANDS

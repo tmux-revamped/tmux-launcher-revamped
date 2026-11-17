@@ -15,7 +15,37 @@ setup() {
 }
 
 teardown() {
+  [[ -z "${HOST:-}" ]] || command tmux -S "${HOST}" kill-server 2>/dev/null || :
+  [[ -z "${HOST:-}" ]] || rm -f "${HOST}"
   teardown_tmux_server
+}
+
+attach_host() {
+  HOST="${TMUX_SOCKET}-host"
+  command tmux -S "${HOST}" -f /dev/null new-session -d -s host -x 120 -y 30 \
+    "env -u TMUX TERM=xterm-256color tmux -S '${TMUX_SOCKET}' attach-session -t test"
+  settled attached
+}
+
+attached() {
+  local clients
+  clients=$(tmux list-clients -F x 2>/dev/null)
+  [[ -n "${clients}" ]]
+}
+
+settled() {
+  local delay
+  for delay in 0.01 0.02 0.05 0.1 0.2 0.5 1 1 2; do
+    "$@" && return 0
+    sleep "${delay}"
+  done
+  "$@"
+}
+
+window_named() {
+  local names
+  names=$(tmux list-windows -a -F '#{window_name}')
+  grep -qx "$1" <<<"${names}"
 }
 
 load_plugin() {
@@ -119,6 +149,41 @@ start_in() {
   # Assert
   run windows
   [[ "${lines[1]}" == "demo 1 "* ]]
+}
+
+@test "entrypoint - an app set up on the command line launches that way from its key" {
+  # Arrange
+  attach_host
+
+  # Act
+  TMUX="${TMUX_SOCKET},1,0" sh "${ROOT}/bin/launcher-revamped" --apps demo --demo-key T --demo-mode window --demo-name fromcli --demo-command 'sleep 30' apply
+  command tmux -S "${HOST}" send-keys -t host C-b T
+
+  # Assert
+  settled window_named fromcli
+}
+
+@test "entrypoint - the picker key launches the pick from a checkout path with a space, a hash and a quote" {
+  # Arrange
+  local copy="${BATS_TEST_TMPDIR}/it's #1 dir" quoted
+  mkdir -p "${copy}" "${BATS_TEST_TMPDIR}/stubs"
+  cp -Rf "${ROOT}/bin" "${ROOT}/lib" "${ROOT}/launcher-revamped.tmux" "${copy}/"
+  quoted=$(printf '%s' "${copy}" | sed -e "s/'/'\\\\''/g" -e 's/#/##/g')
+  printf '#!/bin/sh\ncat >/dev/null\nprintf "demo\\n"\n' >"${BATS_TEST_TMPDIR}/stubs/fzf"
+  chmod +x "${BATS_TEST_TMPDIR}/stubs/fzf"
+  tmux set-environment -g PATH "${BATS_TEST_TMPDIR}/stubs:${PATH}"
+  set_option @launcher_revamped_apps demo
+  set_option @launcher_revamped_picker_key P
+  set_option @launcher_revamped_demo_mode window
+  set_option @launcher_revamped_demo_command 'sleep 30'
+  tmux run-shell "'${quoted}/launcher-revamped.tmux'"
+  attach_host
+
+  # Act
+  command tmux -S "${HOST}" send-keys -t host C-b P
+
+  # Assert
+  settled window_named demo
 }
 
 @test "entrypoint - git tracks the entry point and the tool as executable" {

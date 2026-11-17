@@ -100,7 +100,7 @@ run-shell ~/.tmux/plugins/tmux-launcher-revamped/launcher-revamped.tmux
 | `@launcher_revamped_max_depth` | `20` | 標記搜尋向上查找的資料夾層數 |
 | `@launcher_revamped_skip_missing` | `off` | `on` 時不為命令未安裝的應用程式綁定按鍵；有主機的應用程式不檢查 |
 
-每個選項亦可寫成以短橫線連接的命令選項，例如 `--menu-key M-o`，以及環境變數，例如 `LAUNCHER_REVAMPED_MENU_KEY`；命令列優先於環境變數，環境變數優先於 tmux 選項。空的 tmux 選項表示使用預設值。
+每個選項亦可寫成以短橫線連接的命令選項，例如 `--menu-key M-o`，以及環境變數，例如 `LAUNCHER_REVAMPED_MENU_KEY`；命令列優先於環境變數，環境變數優先於 tmux 選項。以 tmux 選項給出的設定在啟動應用程式時讀取；透過命令列或環境變數傳給 `launcher-revamped apply` 的設定會帶到它綁定的按鍵上。空的 tmux 選項表示使用預設值。
 
 3.0.0 之前這些選項名為 `@launcher_*`，舊名稱已不再生效。選單按鍵的關閉值由 `off` 改為 `none`。
 

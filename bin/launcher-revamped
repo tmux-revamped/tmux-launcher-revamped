@@ -103,8 +103,10 @@ tmux options:
 notes:
   The entry point runs apply once when tmux loads the plugin, and every
   binding goes to tmux in one call. Each app starts in the pane's folder,
-  or in the nearest folder above it that holds its marker. A popup needs
-  tmux 3.2; on an older tmux it opens as a window.
+  or in the nearest folder above it that holds its marker. A setting given
+  as a tmux option is read when an app launches; one given to apply on the
+  command line or in the environment rides on the keys it binds. A popup
+  needs tmux 3.2; on an older tmux it opens as a window.
 
 examples:
   launcher-revamped list

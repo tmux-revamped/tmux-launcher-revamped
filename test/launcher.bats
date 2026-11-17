@@ -174,15 +174,58 @@ refuse() {
   [[ "${lines[0]}" == "bind-key -N Pick an app P display-popup -E '"*"/bin/launcher-revamped' pick \\; run-shell -b TMUX_PANE=#{pane_id} '"*"/bin/launcher-revamped' launch-picked" ]]
 }
 
-@test "launcher - the tool path doubles a hash and escapes a quote" {
+@test "launcher - the tool path carries no hash and survives the shell with its quote" {
   # Arrange
   export PROBE_LIB="/tmp/it's #1/lib"
 
   # Act
-  lib_run launcher 'REVAMPED_LIB="${PROBE_LIB}"; launcher_revamped_plan_tool; printf "%s" "${LAUNCHER_REVAMPED_TOOL}"'
+  lib_run launcher 'REVAMPED_LIB="${PROBE_LIB}"; launcher_revamped_plan_tool; printf "%s\n" "${LAUNCHER_REVAMPED_TOOL}"; eval "printf \"%s\\n\" ${LAUNCHER_REVAMPED_TOOL}"'
 
   # Assert
-  [[ "${output}" == "'/tmp/it'\\''s ##1/bin/launcher-revamped'" ]]
+  [[ "${lines[0]}" != *"#"* ]]
+  [[ "${lines[1]}" == "/tmp/it's #1/bin/launcher-revamped" ]]
+}
+
+@test "launcher - settings from the command line or environment ride on every command a key runs" {
+  # Arrange
+  local carried=" --apps 'demo' --marker '.git' --demo-command 'less -N'"
+  option picker_key P
+  export LAUNCHER_REVAMPED_APPS=demo LAUNCHER_REVAMPED_DEMO_KEY=D LAUNCHER_REVAMPED_DEMO_COMMAND="less -N" LAUNCHER_REVAMPED_MARKER=.git
+
+  # Act
+  plan_at 3.8
+
+  # Assert
+  [[ "${output}" == *"bind-key -N Launch demo D run-shell -b TMUX_PANE=#{pane_id} '"*"/bin/launcher-revamped'${carried} launch 'demo'"* ]]
+  [[ "${output}" == *"/bin/launcher-revamped'${carried} pick"* ]]
+  [[ "${output}" == *"/bin/launcher-revamped'${carried} launch-picked"* ]]
+  [[ "${output}" != *"--demo-key"* ]]
+}
+
+@test "launcher - a carried value keeps its quote and writes its hash without one" {
+  # Arrange
+  export LAUNCHER_REVAMPED_APPS=demo LAUNCHER_REVAMPED_DEMO_COMMAND="less '#1 notes'"
+
+  # Act
+  lib_run launcher 'launcher_revamped_load "${LAUNCHER_REVAMPED_GLOBALS}"; carried=$(launcher_revamped_carried); printf "%s\n" "${carried}"; eval "set -- ${carried}"; printf "%s\n" "$4"'
+
+  # Assert
+  [[ "${lines[0]}" != *"#"* ]]
+  [[ "${lines[1]}" == "less '#1 notes'" ]]
+}
+
+@test "launcher - a setting from a tmux option stays off the keys" {
+  # Arrange
+  option apps demo
+  option demo_key D
+  option demo_command 'sleep 30'
+
+  # Act
+  plan_at 3.8
+
+  # Assert
+  [[ "${output}" == *"bind-key -N Launch demo D run-shell -b TMUX_PANE=#{pane_id} '"*"/bin/launcher-revamped' launch 'demo'"* ]]
+  [[ "${output}" != *" --"* ]]
 }
 
 @test "launcher - a word is quoted for sh with every quote escaped" {

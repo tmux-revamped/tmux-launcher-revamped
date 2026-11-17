@@ -100,7 +100,7 @@ run-shell ~/.tmux/plugins/tmux-launcher-revamped/launcher-revamped.tmux
 | `@launcher_revamped_max_depth` | `20` | 标记搜索向上查找的文件夹层数 |
 | `@launcher_revamped_skip_missing` | `off` | `on` 时不为命令未安装的应用绑定按键；有主机的应用不检查 |
 
-每个选项也可以写成用短横线连接的命令选项，例如 `--menu-key M-o`，以及环境变量，例如 `LAUNCHER_REVAMPED_MENU_KEY`；命令行优先于环境变量，环境变量优先于 tmux 选项。空的 tmux 选项表示使用默认值。
+每个选项也可以写成用短横线连接的命令选项，例如 `--menu-key M-o`，以及环境变量，例如 `LAUNCHER_REVAMPED_MENU_KEY`；命令行优先于环境变量，环境变量优先于 tmux 选项。以 tmux 选项给出的设置在启动应用时读取；通过命令行或环境变量传给 `launcher-revamped apply` 的设置会带到它绑定的按键上。空的 tmux 选项表示使用默认值。
 
 3.0.0 之前这些选项名为 `@launcher_*`，旧名称已不再生效。菜单按键的关闭值由 `off` 改为 `none`。
 

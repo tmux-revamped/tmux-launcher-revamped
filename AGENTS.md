@@ -29,6 +29,8 @@ Guidance for anyone, human or agent, changing tmux-launcher-revamped. What it is
 
 - `apply` reads the globals and every app's fields with two `tmux display-message` calls and one `env` read, reads `list-keys` once for the menu key, builds the plan, and sends every binding to tmux in one call separated by `;`.
 - `launch` reads the globals, the app's fields and the pane's folder with one `tmux display-message` call. Every launch binding passes `TMUX_PANE=#{pane_id}`, which tmux expands for the pane the key was pressed in, and `launch` targets that pane; run from a shell, it targets the shell's own pane through the same variable. A group reads its members' fields with one more and opens them in one call.
+- A setting `apply` got from the command line or the environment, any global or app field except a key, rides on every command a binding runs, `launch`, `pick` and `launch-picked`, as an option, since neither exists when tmux runs a key; one from a tmux option is left off and read at launch, so a change needs no reload.
+- The tool path, an app ID and every carried value go through `launcher_revamped_literal`, which single-quotes them and writes each `#` as `"$(printf '%b' '\0043')"`, so they read the same in `run-shell`, a menu and a popup, whether or not tmux expands formats there. Only `#{pane_id}` and the typed-text format are left for tmux to expand.
 - An empty tmux option means its default; an empty environment variable or long option leaves that key unbound.
 - The plan holds one argument per line and a blank line between commands; an empty argument, the menu items' shortcut key, is written as `''` and sent to tmux as an empty string.
 - A menu key the person bound before the plugin loaded stays theirs, and `doctor` reports it.
@@ -50,4 +52,4 @@ Guidance for anyone, human or agent, changing tmux-launcher-revamped. What it is
 
 As of 2026-11-16:
 
-- No test presses its keys through a real client; the suites check the bound commands and call them directly, so what tmux does to a binding's own command goes untested.
+- An app key and the picker key are pressed through a real client in a test; the menu key and an app key with a prompt are checked as bindings and their commands called directly.
