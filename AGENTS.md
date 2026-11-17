@@ -50,6 +50,4 @@ Guidance for anyone, human or agent, changing tmux-launcher-revamped. What it is
 
 ## Gaps against FAMILY.md
 
-As of 2026-11-16:
-
-- An app key and the picker key are pressed through a real client in a test; the menu key and an app key with a prompt are checked as bindings and their commands called directly.
+As of 2026-11-17, none.

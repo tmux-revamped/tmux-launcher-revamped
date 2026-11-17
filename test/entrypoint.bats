@@ -372,3 +372,58 @@ start_in() {
   # Assert
   [[ "${output}" =~ prefix\ M-a\ +warn\ +already\ bound,\ so\ the\ menu\ has\ no\ key ]]
 }
+
+host_shows() {
+  local screen
+  screen=$(command tmux -S "${HOST}" capture-pane -p -t host)
+  [[ "${screen}" == *"$1"* ]]
+}
+
+file_is() {
+  local now
+  [[ -f "$1" ]] || return 1
+  now=$(cat "$1")
+  [[ "${now}" == "$2" ]]
+}
+
+@test "menu - pressing prefix M-a lists the apps and Enter launches the first one" {
+  # Arrange
+  set_option @launcher_revamped_apps 'demo other'
+  set_option @launcher_revamped_demo_mode window
+  set_option @launcher_revamped_demo_name frommenu
+  set_option @launcher_revamped_demo_command 'sleep 30'
+  set_option @launcher_revamped_other_command 'sleep 31'
+  load_plugin "${ROOT}"
+  attach_host
+
+  # Act
+  command tmux -S "${HOST}" send-keys -t host C-b M-a
+
+  # Assert
+  settled host_shows 'Launchers'
+  command tmux -S "${HOST}" send-keys -t host Enter
+  settled window_named frommenu
+}
+
+@test "prompt - an app key that asks first hands each typed word to the app as its own argument" {
+  # Arrange
+  local out="${BATS_TEST_TMPDIR}/typed.out" show="${BATS_TEST_TMPDIR}/show"
+  printf '#!/bin/sh\nprintf "[%%s]\\n" "$@" >"%s"\nsleep 30\n' "${out}" >"${show}"
+  chmod +x "${show}"
+  set_option @launcher_revamped_apps demo
+  set_option @launcher_revamped_demo_key T
+  set_option @launcher_revamped_demo_mode window
+  set_option @launcher_revamped_demo_prompt 'args:'
+  set_option @launcher_revamped_demo_command "${show}"
+  load_plugin "${ROOT}"
+  attach_host
+
+  # Act
+  command tmux -S "${HOST}" send-keys -t host C-b T
+
+  # Assert
+  settled host_shows 'args:'
+  command tmux -S "${HOST}" send-keys -t host -l "it's #1 two"
+  command tmux -S "${HOST}" send-keys -t host Enter
+  settled file_is "${out}" "[it's]"$'\n'"[#1]"$'\n'"[two]"
+}
