@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.2](https://github.com/tmux-revamped/tmux-launcher-revamped/compare/v3.0.1...v3.0.2) (2026-11-17)
+
+
+### Bug Fixes
+
+* carry settings to keys, keep # out of popups ([979c593](https://github.com/tmux-revamped/tmux-launcher-revamped/commit/979c5932257238d3f3cf886a058b2b5d06d256c7))
+
 ## [3.0.1](https://github.com/tmux-revamped/tmux-launcher-revamped/compare/v3.0.0...v3.0.1) (2026-11-16)
 
 
