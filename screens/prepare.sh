@@ -19,6 +19,6 @@ cd "${demo}/project"
 printf '# project\n\nA demo project for the launcher screens.\n' >README.md
 printf 'print("hello")\n' >src/main.py
 git init -q -b main
-git -c user.name=octocat -c user.email=octocat@example.com add README.md src/main.py
-GIT_AUTHOR_DATE=2026-01-01T12:00:00Z GIT_COMMITTER_DATE=2026-01-01T12:00:00Z git -c user.name=octocat -c user.email=octocat@example.com commit -q -m "feat: start the project"
+git -c user.name=octocat -c user.email= add README.md src/main.py
+GIT_AUTHOR_DATE=2026-01-01T12:00:00Z GIT_COMMITTER_DATE=2026-01-01T12:00:00Z git -c user.name=octocat -c user.email= commit -q -m "feat: start the project"
 printf '\nRun it with python3 src/main.py.\n' >>README.md

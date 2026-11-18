@@ -44,7 +44,7 @@ Enter
 Sleep 2s
 Hide
 Ctrl+]
-Type@5ms "prefix N"
+Type@5ms "prefix N, q"
 Enter
 Show
 Ctrl+B
@@ -52,11 +52,6 @@ Type@1ms "N"
 Sleep 2s
 Screenshot split.png
 Sleep 1s
-Hide
-Ctrl+]
-Type@5ms "q"
-Enter
-Show
 Type "q"
 Sleep 2s
 Hide
@@ -77,7 +72,7 @@ Type "q"
 Sleep 2s
 Hide
 Ctrl+]
-Type@5ms "prefix P, notes, Enter"
+Type@5ms "prefix P, notes, Enter, q"
 Enter
 Show
 Ctrl+B
@@ -89,11 +84,6 @@ Screenshot picker.png
 Sleep 1s
 Enter
 Sleep 3s
-Hide
-Ctrl+]
-Type@5ms "q"
-Enter
-Show
 Type "q"
 Sleep 2s
 Hide
