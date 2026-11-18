@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.4](https://github.com/tmux-revamped/tmux-launcher-revamped/compare/v3.0.3...v3.0.4) (2026-11-18)
+
+
+### Bug Fixes
+
+* stop counting some characters twice ([1fb674b](https://github.com/tmux-revamped/tmux-launcher-revamped/commit/1fb674b4236b6cc7093662eae0d5a007ae6d76fb))
+
 ## [3.0.3](https://github.com/tmux-revamped/tmux-launcher-revamped/compare/v3.0.2...v3.0.3) (2026-11-17)
 
 
