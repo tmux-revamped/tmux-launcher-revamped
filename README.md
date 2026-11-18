@@ -118,7 +118,7 @@ set -g @launcher_revamped_lazygit_marker '.git'
 set -g @launcher_revamped_lazygit_if 'git -C "$LAUNCHER_PATH" rev-parse 2>/dev/null'
 
 set -g @launcher_revamped_htop_mode 'split'
-set -g @launcher_revamped_k9s_host 'box.example'
+set -g @launcher_revamped_k9s_host 'devbox'
 set -g @launcher_revamped_man_prompt 'man:'
 set -g @launcher_revamped_dash_group 'lazygit htop'
 ```
@@ -219,6 +219,8 @@ The plugin is POSIX `sh`. CI runs every suite on each row below.
 | `make coverage` | bashcov on this Mac and in the Ubuntu container, merged and gated at 100 percent |
 | `make screens` | The screens above, recorded from the real plugin inside tmux with VHS, on macOS |
 | `make install` | The command, its man page and completions under `PREFIX` |
+
+On macOS, `brew bundle` installs every tool these targets call, from the [`Brewfile`](Brewfile).
 
 Commits follow the conventional commit format and go straight to `main`. After a green `ci` run on `main`, `release.yml` runs semantic-release: every `feat` or `fix` since the last tag publishes a release, stamps the version constant and adds the notes to [`CHANGELOG.md`](CHANGELOG.md).
 

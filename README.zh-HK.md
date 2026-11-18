@@ -118,7 +118,7 @@ set -g @launcher_revamped_lazygit_marker '.git'
 set -g @launcher_revamped_lazygit_if 'git -C "$LAUNCHER_PATH" rev-parse 2>/dev/null'
 
 set -g @launcher_revamped_htop_mode 'split'
-set -g @launcher_revamped_k9s_host 'box.example'
+set -g @launcher_revamped_k9s_host 'devbox'
 set -g @launcher_revamped_man_prompt 'man:'
 set -g @launcher_revamped_dash_group 'lazygit htop'
 ```
@@ -219,6 +219,8 @@ set -g @launcher_revamped_dash_group 'lazygit htop'
 | `make coverage` | 在這部 Mac 和 Ubuntu 容器中執行 bashcov，合併後以 100% 為門檻 |
 | `make screens` | 以 VHS 在 tmux 中從真實插件錄製上述畫面，在 macOS 上執行 |
 | `make install` | 把指令、man 手冊和自動完成安裝到 `PREFIX` 下 |
+
+在 macOS 上，執行 `brew bundle` 會根據 [`Brewfile`](Brewfile) 安裝這些目標用到的所有工具。
 
 提交遵循 Conventional Commits 格式，直接進入 `main`。`main` 上的 `ci` 通過後，`release.yml` 會執行 semantic-release：自上一個標籤以來的每個 `feat` 或 `fix` 都會發佈新版本，更新版本常數，並把說明寫入 [`CHANGELOG.md`](CHANGELOG.md)。
 

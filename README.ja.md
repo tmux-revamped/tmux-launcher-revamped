@@ -118,7 +118,7 @@ set -g @launcher_revamped_lazygit_marker '.git'
 set -g @launcher_revamped_lazygit_if 'git -C "$LAUNCHER_PATH" rev-parse 2>/dev/null'
 
 set -g @launcher_revamped_htop_mode 'split'
-set -g @launcher_revamped_k9s_host 'box.example'
+set -g @launcher_revamped_k9s_host 'devbox'
 set -g @launcher_revamped_man_prompt 'man:'
 set -g @launcher_revamped_dash_group 'lazygit htop'
 ```
@@ -219,6 +219,8 @@ yazi、lf、ranger のように画像をプレビューするファイルマネ�
 | `make coverage` | この Mac と Ubuntu のコンテナで bashcov を実行し、合算して 100 パーセントで判定します |
 | `make screens` | 上の画面を、本物のプラグインから tmux の中で VHS で録画します。macOS で実行します |
 | `make install` | コマンド、manページ、補完を `PREFIX` の下に置きます |
+
+macOS では、`brew bundle` を実行すると、これらのターゲットが使うツールがすべて [`Brewfile`](Brewfile) からインストールされます。
 
 コミットは Conventional Commits の形式に従い、そのまま `main` に入ります。`main` で `ci` が成功すると、`release.yml` が semantic-release を実行します。前回のタグ以降に `feat` か `fix` があればリリースを公開し、バージョン定数を更新し、変更内容を [`CHANGELOG.md`](CHANGELOG.md) に追加します。
 
