@@ -6,5 +6,6 @@ tr                 ok       <path>, <flavor>
 fzf                warn     the picker needs it: brew install fzf, or apt install fzf
 lazygit            warn     lazygit is not installed
 yazi               warn     yazi is not installed
+settings           ok       every option holds a value it knows
 gum                ok       <path>
 exit 0

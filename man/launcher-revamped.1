@@ -64,7 +64,9 @@ Open the app pick recorded, and clear it.
 .B doctor
 Print one row per dependency: tmux, the core tools, fzf for the picker, each
 app's command, a menu key the person had already bound, and gum. The app rows
-appear only when no core tool is missing. Exits 1 only when a required tool
+appear only when no core tool is missing.
+A settings row names any setting whose value it does not know.
+Exits 1 only when a required tool
 is missing.
 .TP
 .B version

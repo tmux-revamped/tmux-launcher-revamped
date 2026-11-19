@@ -157,11 +157,43 @@ launcher_revamped_doctor_apps() {
   [ -z "${LAUNCHER_REVAMPED_MENU_TAKEN}" ] || revamped_doctor_line "prefix ${LAUNCHER_REVAMPED_MENU_TAKEN}" warn "already bound, so the menu has no key; set @launcher_revamped_menu_key"
 }
 
+# shellcheck disable=SC2154
+launcher_revamped_doctor_settings() {
+  launcher_revamped_doctor_settings_kinds="${LAUNCHER_REVAMPED_KINDS}"
+  launcher_revamped_doctor_settings_values="max_depth	${LAUNCHER_REVAMPED_S_max_depth}
+skip_missing	${LAUNCHER_REVAMPED_S_skip_missing}"
+  [ "${REVAMPED_DOCTOR_MISSING}" -ne 0 ] || launcher_revamped_doctor_settings_apps
+  revamped_doctor_settings "${launcher_revamped_doctor_settings_kinds}" "${launcher_revamped_doctor_settings_values}"
+}
+
+launcher_revamped_doctor_settings_apps() {
+  set -f
+  for launcher_revamped_doctor_settings_id in ${LAUNCHER_REVAMPED_S_apps}; do
+    launcher_revamped_doctor_settings_app "${launcher_revamped_doctor_settings_id}"
+  done
+  set +f
+}
+
+# shellcheck disable=SC2154
+launcher_revamped_doctor_settings_app() {
+  launcher_revamped_field "$1" mode
+  launcher_revamped_doctor_settings_kinds="${launcher_revamped_doctor_settings_kinds}
+$1_mode	${LAUNCHER_REVAMPED_MODES}"
+  launcher_revamped_doctor_settings_values="${launcher_revamped_doctor_settings_values}
+$1_mode	${LAUNCHER_REVAMPED_VALUE}"
+  launcher_revamped_field "$1" reuse
+  launcher_revamped_doctor_settings_kinds="${launcher_revamped_doctor_settings_kinds}
+$1_reuse	on off"
+  launcher_revamped_doctor_settings_values="${launcher_revamped_doctor_settings_values}
+$1_reuse	${LAUNCHER_REVAMPED_VALUE}"
+}
+
 launcher_revamped_doctor() {
   revamped_doctor_tmux
   revamped_doctor_core_tools awk sed tr
   launcher_revamped_doctor_fzf
   [ "${REVAMPED_DOCTOR_MISSING}" -ne 0 ] || launcher_revamped_doctor_apps
+  launcher_revamped_doctor_settings
   revamped_doctor_gum
   revamped_doctor_finish
   [ "${REVAMPED_DOCTOR_MISSING}" -eq 0 ] || exit 1

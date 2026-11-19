@@ -34,6 +34,7 @@ Guidance for anyone, human or agent, changing tmux-launcher-revamped. What it is
 - An empty tmux option means its default; an empty environment variable or long option leaves that key unbound.
 - The plan holds one argument per line and a blank line between commands; an empty argument, the menu items' shortcut key, is written as `''` and sent to tmux as an empty string.
 - A menu key the person bound before the plugin loaded stays theirs, and `doctor` reports it.
+- `doctor`'s settings row checks the globals against `LAUNCHER_REVAMPED_KINDS` and, when no required tool is missing, each app's `mode` against `LAUNCHER_REVAMPED_MODES` and its `reuse` against `on` and `off`.
 - The entry point clears every inherited `REVAMPED_` variable except the test switches, and every `LAUNCHER_REVAMPED_*_LOADED` guard; every other global is assigned outright in the state file.
 
 ## Domain rules

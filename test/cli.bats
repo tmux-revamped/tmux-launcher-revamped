@@ -92,6 +92,30 @@ answers() {
   grep -q '^format --theme pink' "${REVAMPED_TEST_GUM_LOG}"
 }
 
+@test "cli - doctor names a setting whose value it does not know" {
+  # Arrange
+  export REVAMPED_TEST_TMUX_VERSION=3.6 LAUNCHER_REVAMPED_SKIP_MISSING=yes
+
+  # Act
+  tool doctor
+
+  # Assert
+  run grep '^settings' <<<"${output}"
+  [[ "${output}" == "settings           warn     unknown values: skip_missing=yes" ]]
+}
+
+@test "cli - doctor names an app's mode or reuse value it does not know, and leaves a known one alone" {
+  # Arrange
+  export REVAMPED_TEST_TMUX_VERSION=3.6 LAUNCHER_REVAMPED_LAZYGIT_MODE=tab LAUNCHER_REVAMPED_LAZYGIT_REUSE=on LAUNCHER_REVAMPED_YAZI_MODE=split LAUNCHER_REVAMPED_YAZI_REUSE=yes
+
+  # Act
+  tool doctor
+
+  # Assert
+  run grep '^settings' <<<"${output}"
+  [[ "${output}" == "settings           warn     unknown values: lazygit_mode=tab yazi_reuse=yes" ]]
+}
+
 @test "cli - doctor lists every tool and exits 0" {
   # Arrange
   export REVAMPED_TEST_TMUX_VERSION=3.6

@@ -100,7 +100,7 @@ Press `prefix M-a`. The menu lists every app in `@launcher_revamped_apps`, which
 | `@launcher_revamped_max_depth` | `20` | How many folders the marker search climbs |
 | `@launcher_revamped_skip_missing` | `off` | `on` binds no key for an app whose command is not installed; an app with a host is not checked |
 
-Every option is also a command option with dashes, such as `--menu-key M-o`, and an environment variable, such as `LAUNCHER_REVAMPED_MENU_KEY`; the command line wins over the environment, and the environment over the tmux option. A setting given as a tmux option is read when an app launches, and one given to `launcher-revamped apply` on the command line or in the environment rides on the keys it binds. An empty tmux option means its default.
+Every option is also a command option with dashes, such as `--menu-key M-o`, and an environment variable, such as `LAUNCHER_REVAMPED_MENU_KEY`; the command line wins over the environment, and the environment over the tmux option. A setting given as a tmux option is read when an app launches, and one given to `launcher-revamped apply` on the command line or in the environment rides on the keys it binds. An empty tmux option means its default. `doctor` names any setting that holds a value the plugin does not know.
 
 The options were named `@launcher_*` before 3.0.0, and those names no longer work.
 

@@ -100,7 +100,7 @@ run-shell ~/.tmux/plugins/tmux-launcher-revamped/launcher-revamped.tmux
 | `@launcher_revamped_max_depth` | `20` | マーカーを探して上にたどるフォルダーの数 |
 | `@launcher_revamped_skip_missing` | `off` | `on` で、コマンドがインストールされていないアプリにキーを割り当てません。ホストを持つアプリは確認しません |
 
-どのオプションも、ダッシュ区切りのコマンドオプション（例 `--menu-key M-o`）と環境変数（例 `LAUNCHER_REVAMPED_MENU_KEY`）で指定できます。優先順位はコマンドライン、環境変数、tmux オプションの順です。tmux オプションで指定した設定はアプリを起動するたびに読まれ、`launcher-revamped apply` にコマンドラインまたは環境変数で渡したものは割り当てたキーに引き継がれます。空の tmux オプションは既定値を意味します。
+どのオプションも、ダッシュ区切りのコマンドオプション（例 `--menu-key M-o`）と環境変数（例 `LAUNCHER_REVAMPED_MENU_KEY`）で指定できます。優先順位はコマンドライン、環境変数、tmux オプションの順です。tmux オプションで指定した設定はアプリを起動するたびに読まれ、`launcher-revamped apply` にコマンドラインまたは環境変数で渡したものは割り当てたキーに引き継がれます。空の tmux オプションは既定値を意味します。`doctor` は、プラグインが認識できない値を持つ設定の名前を表示します。
 
 3.0.0 より前はオプション名が `@launcher_*` で、その名前はもう使えません。
 
