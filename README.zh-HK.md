@@ -94,7 +94,7 @@ run-shell ~/.tmux/plugins/tmux-launcher-revamped/launcher-revamped.tmux
 | tmux 選項 | 預設值 | 含義 |
 |:------------|:--------|:--------|
 | `@launcher_revamped_apps` | `lazygit yazi` | 選單列出的應用程式 ID |
-| `@launcher_revamped_menu_key` | `M-a` | 選單的 prefix 按鍵；`none` 表示不綁定選單 |
+| `@launcher_revamped_menu_key` | `M-a` | 選單的 prefix 按鍵；`off` 或 `none` 表示不綁定選單 |
 | `@launcher_revamped_picker_key` | 無 | fzf 應用程式選擇器的 prefix 按鍵 |
 | `@launcher_revamped_marker` | 無 | 標示項目根目錄的檔案或資料夾，例如 `.git`，用於沒有自己標記的應用程式 |
 | `@launcher_revamped_max_depth` | `20` | 標記搜尋向上查找的資料夾層數 |
@@ -102,7 +102,7 @@ run-shell ~/.tmux/plugins/tmux-launcher-revamped/launcher-revamped.tmux
 
 每個選項亦可寫成以短橫線連接的命令選項，例如 `--menu-key M-o`，以及環境變數，例如 `LAUNCHER_REVAMPED_MENU_KEY`；命令列優先於環境變數，環境變數優先於 tmux 選項。以 tmux 選項給出的設定在啟動應用程式時讀取；透過命令列或環境變數傳給 `launcher-revamped apply` 的設定會帶到它綁定的按鍵上。空的 tmux 選項表示使用預設值。
 
-3.0.0 之前這些選項名為 `@launcher_*`，舊名稱已不再生效。選單按鍵的關閉值由 `off` 改為 `none`。
+3.0.0 之前這些選項名為 `@launcher_*`，舊名稱已不再生效。
 
 <a id="應用程式"></a>
 

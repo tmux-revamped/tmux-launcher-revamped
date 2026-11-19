@@ -140,6 +140,17 @@ refuse() {
   [[ -z "${output}" ]]
 }
 
+@test "launcher - a menu key of off binds no menu" {
+  # Arrange
+  option menu_key off
+
+  # Act
+  plan_at 3.6
+
+  # Assert
+  [[ -z "${output}" ]]
+}
+
 @test "launcher - an empty menu key from the environment binds no menu" {
   # Arrange
   export LAUNCHER_REVAMPED_MENU_KEY=''

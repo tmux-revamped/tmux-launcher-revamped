@@ -94,7 +94,7 @@ Press `prefix M-a`. The menu lists every app in `@launcher_revamped_apps`, which
 | tmux option | Default | Meaning |
 |:------------|:--------|:--------|
 | `@launcher_revamped_apps` | `lazygit yazi` | The app IDs the menu lists |
-| `@launcher_revamped_menu_key` | `M-a` | The prefix key for the menu; `none` binds no menu |
+| `@launcher_revamped_menu_key` | `M-a` | The prefix key for the menu; `off` or `none` binds no menu |
 | `@launcher_revamped_picker_key` | none | The prefix key for the fzf app picker |
 | `@launcher_revamped_marker` | none | A file or folder, such as `.git`, that marks the project root for every app without its own |
 | `@launcher_revamped_max_depth` | `20` | How many folders the marker search climbs |
@@ -102,7 +102,7 @@ Press `prefix M-a`. The menu lists every app in `@launcher_revamped_apps`, which
 
 Every option is also a command option with dashes, such as `--menu-key M-o`, and an environment variable, such as `LAUNCHER_REVAMPED_MENU_KEY`; the command line wins over the environment, and the environment over the tmux option. A setting given as a tmux option is read when an app launches, and one given to `launcher-revamped apply` on the command line or in the environment rides on the keys it binds. An empty tmux option means its default.
 
-The options were named `@launcher_*` before 3.0.0, and those names no longer work. The menu key's off value is now `none`, where it was `off`.
+The options were named `@launcher_*` before 3.0.0, and those names no longer work.
 
 <a id="apps"></a>
 

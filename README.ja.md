@@ -94,7 +94,7 @@ run-shell ~/.tmux/plugins/tmux-launcher-revamped/launcher-revamped.tmux
 | tmux オプション | 既定値 | 意味 |
 |:------------|:--------|:--------|
 | `@launcher_revamped_apps` | `lazygit yazi` | メニューに並ぶアプリの ID |
-| `@launcher_revamped_menu_key` | `M-a` | メニューの prefix キー。`none` でメニューを割り当てません |
+| `@launcher_revamped_menu_key` | `M-a` | メニューの prefix キー。`off` または `none` でメニューを割り当てません |
 | `@launcher_revamped_picker_key` | なし | fzf のアプリピッカーの prefix キー |
 | `@launcher_revamped_marker` | なし | 専用のマーカーを持たないアプリが使う、プロジェクトのルートを示すファイルかフォルダー。たとえば `.git` |
 | `@launcher_revamped_max_depth` | `20` | マーカーを探して上にたどるフォルダーの数 |
@@ -102,7 +102,7 @@ run-shell ~/.tmux/plugins/tmux-launcher-revamped/launcher-revamped.tmux
 
 どのオプションも、ダッシュ区切りのコマンドオプション（例 `--menu-key M-o`）と環境変数（例 `LAUNCHER_REVAMPED_MENU_KEY`）で指定できます。優先順位はコマンドライン、環境変数、tmux オプションの順です。tmux オプションで指定した設定はアプリを起動するたびに読まれ、`launcher-revamped apply` にコマンドラインまたは環境変数で渡したものは割り当てたキーに引き継がれます。空の tmux オプションは既定値を意味します。
 
-3.0.0 より前はオプション名が `@launcher_*` で、その名前はもう使えません。メニューキーを無効にする値は `off` から `none` に変わりました。
+3.0.0 より前はオプション名が `@launcher_*` で、その名前はもう使えません。
 
 <a id="アプリ"></a>
 

@@ -226,7 +226,7 @@ launcher_revamped_plan_menu() {
   launcher_revamped_plan_menu_key="${LAUNCHER_REVAMPED_S_menu_key}"
   LAUNCHER_REVAMPED_MENU_TAKEN=""
   case "${launcher_revamped_plan_menu_key}" in
-  "" | none) return 0 ;;
+  "" | none | off) return 0 ;;
   *) : ;;
   esac
   launcher_revamped_plan_menu_bound=$(launcher_revamped_binding "${launcher_revamped_plan_menu_key}")

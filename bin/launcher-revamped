@@ -71,8 +71,8 @@ environment:
 
 tmux options:
   @launcher_revamped_apps          the app IDs (lazygit yazi)
-  @launcher_revamped_menu_key      the menu of every app (M-a), none for no
-                                   key
+  @launcher_revamped_menu_key      the menu of every app (M-a), off or none
+                                   for no key
   @launcher_revamped_picker_key    the fzf app picker (unbound)
   @launcher_revamped_marker        the project marker every app uses, such
                                    as .git (none)
