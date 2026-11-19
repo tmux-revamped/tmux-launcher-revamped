@@ -1,5 +1,21 @@
 # Changelog
 
+# [3.1.0](https://github.com/tmux-revamped/tmux-launcher-revamped/compare/v3.0.4...v3.1.0) (2026-11-19)
+
+
+### Bug Fixes
+
+* fold a table wider than the terminal ([5fb8432](https://github.com/tmux-revamped/tmux-launcher-revamped/commit/5fb8432266b8d0f83e37e66464bf2abb9054376a))
+* leave no error after Ctrl-C in a popup ([e14ad2c](https://github.com/tmux-revamped/tmux-launcher-revamped/commit/e14ad2cdbe2a4bfdc7950c84f0380222bc5fa7f6))
+* read off as no menu key again ([5357ded](https://github.com/tmux-revamped/tmux-launcher-revamped/commit/5357ded0ede02cff22218d0d23d2146733f3f7f2))
+* read the grep of macOS as bsd in doctor ([66dcd45](https://github.com/tmux-revamped/tmux-launcher-revamped/commit/66dcd459037f7c00a07d50541df792649358b3c0))
+* stop a recording that hangs ([3a96f5e](https://github.com/tmux-revamped/tmux-launcher-revamped/commit/3a96f5ed4c3d75532e24f005f6c0cd4b1d184f61))
+
+
+### Features
+
+* name unknown setting values in doctor ([55e84b4](https://github.com/tmux-revamped/tmux-launcher-revamped/commit/55e84b40639207641374f05b1d76e372b913f5e6))
+
 ## [3.0.4](https://github.com/tmux-revamped/tmux-launcher-revamped/compare/v3.0.3...v3.0.4) (2026-11-18)
 
 
