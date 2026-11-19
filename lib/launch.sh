@@ -92,7 +92,7 @@ launcher_revamped_open() {
     launcher_revamped_field "$1" width
     launcher_revamped_open_width="${LAUNCHER_REVAMPED_VALUE}"
     launcher_revamped_field "$1" height
-    tmux display-popup -E -w "${launcher_revamped_open_width}" -h "${LAUNCHER_REVAMPED_VALUE}" -d "$2" "$3"
+    tmux display-popup -E -w "${launcher_revamped_open_width}" -h "${LAUNCHER_REVAMPED_VALUE}" -d "$2" "$3" || :
     ;;
   split) tmux split-window -c "$2" "$3" ;;
   *)

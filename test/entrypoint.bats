@@ -379,6 +379,12 @@ host_shows() {
   [[ "${screen}" == *"$1"* ]]
 }
 
+host_lacks() {
+  local screen
+  screen=$(command tmux -S "${HOST}" capture-pane -p -t host)
+  [[ "${screen}" != *"$1"* ]]
+}
+
 file_is() {
   local now
   [[ -f "$1" ]] || return 1
@@ -426,4 +432,28 @@ file_is() {
   command tmux -S "${HOST}" send-keys -t host -l "it's #1 two"
   command tmux -S "${HOST}" send-keys -t host Enter
   settled file_is "${out}" "[it's]"$'\n'"[#1]"$'\n'"[two]"
+}
+
+@test "launch - Ctrl-C ends an app in a popup and leaves no error over the pane" {
+  # Arrange
+  local app="${BATS_TEST_TMPDIR}/app"
+  printf '#!/bin/sh\nprintf "popup app running\\n"\nsleep 30\n' >"${app}"
+  chmod +x "${app}"
+  set_option @launcher_revamped_apps demo
+  set_option @launcher_revamped_demo_key T
+  set_option @launcher_revamped_demo_mode popup
+  set_option @launcher_revamped_demo_command "${app}"
+  load_plugin "${ROOT}"
+  attach_host
+  command tmux -S "${HOST}" send-keys -t host C-b T
+  settled host_shows 'popup app running'
+
+  # Act
+  command tmux -S "${HOST}" send-keys -t host C-c
+
+  # Assert
+  settled host_lacks 'popup app running'
+  host_lacks 'returned'
+  run tmux display-message -p -t test '#{pane_in_mode}'
+  [[ "${output}" == "0" ]]
 }
